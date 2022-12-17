@@ -1,0 +1,21 @@
+QPlainTextEdit {{
+    padding: 0px;
+    font-family: "Droid Sans Mono";
+    background-color: {QTMATERIAL_SECONDARYCOLOR};
+}}
+
+QTreeView::item,
+QListView::item {{
+  padding: 4px;
+  min-height: 16px;
+}}
+
+QToolButton {{
+    height: 24px;
+}}
+
+QComboBox::item,
+QMenu::item,
+QMenuBar::item {{
+  height: 16px;
+}}

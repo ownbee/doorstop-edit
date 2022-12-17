@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="48"
+   height="48"
+   viewBox="0 0 12.7 12.7"
+   version="1.1"
+   id="svg12"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="ds-edit.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     units="px"
+     inkscape:zoom="12.414927"
+     inkscape:cx="20.942531"
+     inkscape:cy="21.707739"
+     inkscape:window-width="3440"
+     inkscape:window-height="1387"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer2" />
+  <defs
+     id="defs9" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#10162b;fill-opacity:1;fill-rule:evenodd;stroke-width:0.223;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect62"
+       width="11.99052"
+       height="11.954281"
+       x="-12.341164"
+       y="-12.305939"
+       ry="0"
+       transform="scale(-1)" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke-width:0.1;stroke:#000000;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect77920"
+       width="11.99052"
+       height="11.954281"
+       x="0.35064411"
+       y="0.35165787" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:6.80586px;line-height:1.25;font-family:sans-serif;fill:#5876bf;fill-opacity:1;stroke:none;stroke-width:0.22193"
+       x="0.60240102"
+       y="6.4701104"
+       id="text11333"
+       transform="scale(0.96652938,1.0346297)"><tspan
+         sodipodi:role="line"
+         id="tspan11331"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.80586px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#5876bf;fill-opacity:1;stroke-width:0.22193"
+         x="0.60240102"
+         y="6.4701104">DS</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.66861px;line-height:1.25;font-family:sans-serif;fill:#8caac8;fill-opacity:1;stroke:none;stroke-width:0.250104"
+       x="2.4277308"
+       y="10.411749"
+       id="text60207"
+       transform="scale(0.94527455,1.0578937)"><tspan
+         sodipodi:role="line"
+         id="tspan60205"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.66861px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#8caac8;fill-opacity:1;stroke-width:0.250104"
+         x="2.4277308"
+         y="10.411749">edit</tspan></text>
+  </g>
+</svg>

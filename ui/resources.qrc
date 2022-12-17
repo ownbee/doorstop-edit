@@ -1,0 +1,29 @@
+<RCC>
+  <qresource prefix="font">
+    <file>DroidSansMono.ttf</file>
+  </qresource>
+  <qresource prefix="icons">
+    <file alias="review-item">icons/check.svg</file>
+    <file alias="review-doc">icons/check-all.svg</file>
+    <file alias="clear-links">icons/link-box-variant-outline.svg</file>
+    <file alias="level-sort">icons/sort-numeric-ascending.svg</file>
+    <file alias="undo">icons/undo.svg</file>
+    <file alias="favicon">icons/ds-edit.svg</file>
+    <file alias="reload">icons/reload.svg</file>
+    <file alias="diff">icons/vector-difference.svg</file>
+    <file alias="copy">icons/content-copy.svg</file>
+    <file alias="exit">icons/exit.svg</file>
+    <file alias="view-item">icons/view-item.svg</file>
+    <file alias="view-sequential">icons/view-sequential.svg</file>
+    <file alias="trash-can">icons/trash-can.svg</file>
+    <file alias="remove-link">icons/remove-link.svg</file>
+    <file alias="pin">icons/pin.svg</file>
+    <file alias="unpin">icons/pin-off.svg</file>
+    <file alias="format-text">icons/format-text.svg</file>
+    <file alias="file-hidden">icons/file-hidden.svg</file>
+    <file alias="add-link">icons/add-link.svg</file>
+    <file alias="add-item">icons/add-item.svg</file>
+    <file alias="add-document">icons/add-document.svg</file>
+    <file alias="clear-text">icons/clear-text.svg</file>
+  </qresource>
+</RCC>
