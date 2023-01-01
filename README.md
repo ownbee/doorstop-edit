@@ -1,12 +1,14 @@
+[![PyPI Version](https://img.shields.io/pypi/v/doorstop-edit.svg)](https://pypi.org/project/doorstop-edit)
+
 # Doorstop Edit
 
-_A cross-platform GUI editor for doorstop powered by PySide6 (Qt)._
+_A cross-platform GUI editor for [Doorstop](https://github.com/doorstop-dev/doorstop) powered by PySide6 (Qt)._
 
 The goal of this GUI is to provide all the tools needed to efficiently work with a larger set of
 requirements within the editor and at the same time have full control of what is happening. The
 editor use the doorstop API whenever possible to behave the same way as doorstop.
 
-![Sample](sample.png)
+![Sample](https://raw.githubusercontent.com/ownbee/doorstop-edit/main/sample.png)
 
 **Features:**
 
