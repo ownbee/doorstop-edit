@@ -65,4 +65,4 @@ requrements, this new GUI was created to fill in some gaps.
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://raw.githubusercontent.com/ownbee/doorstop-edit/main/CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/ownbee/doorstop-edit/blob/main/CONTRIBUTING.md).
