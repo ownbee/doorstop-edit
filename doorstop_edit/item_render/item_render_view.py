@@ -1,14 +1,9 @@
 import logging
 import re
-import tempfile
 from typing import Callable, List, Optional, Union
 
 import doorstop
-
-# from markdown_it import MarkdownIt
-import markdown
-from plantuml_markdown import PlantUMLMarkdownExtension
-from PySide6.QtCore import QObject, QUrl
+from PySide6.QtCore import QObject, QUrl, Signal
 from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
@@ -38,10 +33,13 @@ class RedirectOverridePage(QWebEnginePage):
         return is_nav_ok
 
 
-class ItemRenderView:
+class ItemRenderView(QObject):
     BASE_URL = "file://"
 
+    signal_render_html = Signal((list, doorstop.Item))  # type: ignore
+
     def __init__(self, web_view: QWebEngineView, doorstop_data: DoorstopData) -> None:
+        super().__init__()
         self.web_view = web_view
         self.doorstop_data = doorstop_data
 
@@ -55,41 +53,12 @@ class ItemRenderView:
         self._viewed_item: Optional[doorstop.Item] = None
         self._render_worker: Optional[RenderWorker] = None
 
-        self.plantuml_cache = tempfile.gettempdir()
+        # self._render_worker = RenderWorker(self._get_markdown(base_path), items_to_render, item)
+        self._render_worker = RenderWorker()
+        self._render_worker.result_ready.connect(self._on_render_finished)
+        self.signal_render_html.connect(self._render_worker.render)
 
         web_view.show()  # Render empty view to set backround color.
-
-    def _get_markdown(self, path: str) -> markdown.Markdown:
-        """Get cached markdown instance.
-
-        If document changes a new PlantUMLMarkdownExtension must be created since base_dir must be
-        changed to the new document path in case files are included in the plantuml.
-        """
-        if not hasattr(self, "markdown_instance"):
-            self.markdown_instance = None
-
-        if not hasattr(self, "markdown_instance_doc"):
-            self.markdown_instance_base_path = ""
-
-        if self.markdown_instance is None or self.markdown_instance_base_path != path:
-            self.markdown_instance_base_path = path
-            self.markdown_instance = markdown.Markdown(
-                extensions=(
-                    "markdown.extensions.extra",
-                    "markdown.extensions.sane_lists",
-                    PlantUMLMarkdownExtension(
-                        server="http://www.plantuml.com/plantuml",
-                        cachedir=self.plantuml_cache,
-                        base_dir=self.markdown_instance_base_path,
-                        format="svg",
-                        classes="class1,class2",
-                        title="UML",
-                        alt="UML Diagram",
-                        theme="carbon-gray",
-                    ),
-                )
-            )
-        return self.markdown_instance
 
     @time_function("Changing content in HTML view")
     def show(self, item: Optional[doorstop.Item]) -> None:
@@ -118,24 +87,10 @@ class ItemRenderView:
             else:
                 items_to_render.append(item)
 
-        if item is None:
-            base_path = ""
-        else:
-            base_path = item.document.path
-
-        if self._render_worker is not None and self._render_worker.isRunning():
-            # If already running, terminate it first, otherwise the program will crash!
-            self._render_worker.terminate()
-            if not self._render_worker.wait(2):
-                logger.warning("Could not terminate render worker.")
-                return
-
-        self._render_worker = RenderWorker(self._get_markdown(base_path), items_to_render, item)
-        self._render_worker.result_ready.connect(self._on_render_finished)
-        self._render_worker.start()
+        self.signal_render_html.emit(items_to_render, item)
 
     def _on_render_finished(self, html: str, base_url: str):
-        self.web_view.setHtml(html, base_url + "/")
+        self.web_view.setHtml(html, base_url)
 
     def _on_load_finished(self, ok: bool) -> None:
         if not ok:

@@ -1,9 +1,11 @@
 import logging
+import tempfile
 from typing import List, Optional
 
 import doorstop
 import markdown
-from PySide6.QtCore import QThread, Signal
+from plantuml_markdown import PlantUMLMarkdownExtension
+from PySide6.QtCore import QObject, QThread, Signal, Slot
 
 from doorstop_edit.item_render.markdown_css import MARKDOWN_CSS
 
@@ -34,7 +36,7 @@ document.getElementById('selected_item')?.scrollIntoView();
 """
 
 
-class RenderWorker(QThread):
+class RenderWorker(QObject):
     """Concurrent worker for generating HTML from markdown.
 
     Rendering can sometimes be a bit slow, especially if it contains plantUML.
@@ -42,27 +44,62 @@ class RenderWorker(QThread):
 
     result_ready = Signal((str, str))  # type: ignore
 
-    def __init__(self, md: markdown.Markdown, items: List[doorstop.Item], highlight_item: Optional[doorstop.Item]):
+    def __init__(self):
         super().__init__()
-        self.md = md
-        self.items = items
-        self.highlight_item = highlight_item
 
-    def run(self):
+        self.plantuml_cache = tempfile.gettempdir()
+        self.workerThread = QThread()
+        self.moveToThread(self.workerThread)
+        self.workerThread.start()
+
+    def _get_markdown(self, path: str) -> markdown.Markdown:
+        """Get cached markdown instance.
+
+        If document changes a new PlantUMLMarkdownExtension must be created since base_dir must be
+        changed to the new document path in case files are included in the plantuml.
+        """
+        if not hasattr(self, "markdown_instance"):
+            self.markdown_instance = None
+
+        if not hasattr(self, "markdown_instance_doc"):
+            self.markdown_instance_base_path = ""
+
+        if self.markdown_instance is None or self.markdown_instance_base_path != path:
+            self.markdown_instance_base_path = path
+            self.markdown_instance = markdown.Markdown(
+                extensions=(
+                    "markdown.extensions.extra",
+                    "markdown.extensions.sane_lists",
+                    PlantUMLMarkdownExtension(
+                        server="http://www.plantuml.com/plantuml",
+                        cachedir=self.plantuml_cache,
+                        base_dir=self.markdown_instance_base_path,
+                        format="svg",
+                        classes="class1,class2",
+                        title="UML",
+                        alt="UML Diagram",
+                        theme="carbon-gray",
+                    ),
+                )
+            )
+        return self.markdown_instance
+
+    @Slot(list, doorstop.Item)
+    def render(self, items: List[doorstop.Item], highlight_item: Optional[doorstop.Item]):
         html = ""
-        for render_item in self.items:
+        for render_item in items:
             html_part = self._generate_html(render_item)
-            if self.highlight_item is not None and render_item.uid == self.highlight_item.uid:
+            if highlight_item is not None and render_item.uid == highlight_item.uid:
                 html += f'<div id="{HTML_ID_SELECTED}">{html_part}</div>'
             else:
                 html += f'<div class="{HTML_CLASS_UNSELECTED}">{html_part}</div>'
 
-        if self.highlight_item is None:
-            base_url = BASE_URL + "none"
+        if highlight_item is None:
+            base_url = BASE_URL + "none/"
         else:
             # Relative to document good?
             # This is needed for images etc. in markdown to load properly...
-            base_url = BASE_URL + self.highlight_item.document.path
+            base_url = BASE_URL + highlight_item.document.path + "/"
 
         self.result_ready.emit(HTML_TEMPLATE.format(content=html, style=MARKDOWN_CSS), base_url)
 
@@ -72,8 +109,9 @@ class RenderWorker(QThread):
         for line in doorstop.publisher._lines_markdown([item], linkify=True):  # pylint: disable=protected-access
             markdown_content += str(line) + "\n"
 
+        md = self._get_markdown(item.document.path)
         try:
-            return self.md.convert(markdown_content)
+            return md.convert(markdown_content)
         except Exception as e:
             msg = "Failed to render HTML from markdown."
             logger.error(msg, exc_info=e)
