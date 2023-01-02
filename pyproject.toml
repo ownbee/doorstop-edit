@@ -29,15 +29,14 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-PySide6 = ">=6.4.0,<7.0.0"
-pyqtdarktheme = "^2.1.0"
 doorstop = "^2.2.post1"
-mdformat = "^0.7.16"
-mdformat_tables = "^0.4.1"
-markdown-it-py = "^2.1.0"
+PySide6 = ">=6.4.0,<7.0.0"
 qt-material = "^2.12"
+markdown = "^3.4.1"
+plantuml-markdown = "^3.8.0"
+mdformat-myst = "^0.1.5"
 pygments = "^2.14.0"
-
+setuptools = "^65.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.0"
@@ -48,6 +47,7 @@ flake8 = "^6.0.0"
 isort = "^5.11.4"
 colorama = "^0.4.6"
 autoflake = "^2.0.0"
+types-markdown = "^3.4.2.1"
 
 
 [tool.black]

@@ -496,7 +496,7 @@ class ItemEditView:
                 "number": True,  # switch on consecutive numbering of ordered lists
                 "wrap": 80,  # set word wrap width to 60 characters
             },
-            extensions=["tables"],
+            extensions=["myst"],
         )
         # Using cursor for not bypassing undo buffer (Ctrl-Z).
         #

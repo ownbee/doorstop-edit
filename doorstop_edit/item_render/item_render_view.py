@@ -1,44 +1,28 @@
 import logging
 import re
+import tempfile
 from typing import Callable, List, Optional, Union
 
 import doorstop
-from markdown_it import MarkdownIt
+
+# from markdown_it import MarkdownIt
+import markdown
+from plantuml_markdown import PlantUMLMarkdownExtension
 from PySide6.QtCore import QObject, QUrl
 from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from doorstop_edit.doorstop_data import DoorstopData
-from doorstop_edit.item_render.markdown_css import MARKDOWN_CSS
+from doorstop_edit.item_render.render_worker import RenderWorker
 from doorstop_edit.utils.debug_timer import time_function
 from doorstop_edit.utils.item_matcher import match_level
 
 logger = logging.getLogger("gui")
 
-HTML_ID_SELECTED = "selected_item"
-HTML_CLASS_UNSELECTED = "unselected"
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html>
-<head>
-<style type="text/css">
-{style}
-.unselected {{
-    background-color: #121214;
-}}
-</style>
-</head>
-<body class="markdown-body">
-{content}
- <script>
-document.getElementById('selected_item')?.scrollIntoView();
-</script>
-</body>
-</html>
-"""
-
 
 class RedirectOverridePage(QWebEnginePage):
+    """Class to enable Child and Parent items link navigation in HTML."""
+
     def __init__(self, parent: QObject, on_navigration_request: Callable[[str], None]):
         super().__init__(parent)
         self._on_navigration_request = on_navigration_request
@@ -69,10 +53,45 @@ class ItemRenderView:
         self._clear_history_on_load = True
         self._section_mode_on = False
         self._viewed_item: Optional[doorstop.Item] = None
+        self._render_worker: Optional[RenderWorker] = None
+
+        self.plantuml_cache = tempfile.gettempdir()
 
         web_view.show()  # Render empty view to set backround color.
 
-    @time_function("Rendering item HTML")
+    def _get_markdown(self, path: str) -> markdown.Markdown:
+        """Get cached markdown instance.
+
+        If document changes a new PlantUMLMarkdownExtension must be created since base_dir must be
+        changed to the new document path in case files are included in the plantuml.
+        """
+        if not hasattr(self, "markdown_instance"):
+            self.markdown_instance = None
+
+        if not hasattr(self, "markdown_instance_doc"):
+            self.markdown_instance_base_path = ""
+
+        if self.markdown_instance is None or self.markdown_instance_base_path != path:
+            self.markdown_instance_base_path = path
+            self.markdown_instance = markdown.Markdown(
+                extensions=(
+                    "markdown.extensions.extra",
+                    "markdown.extensions.sane_lists",
+                    PlantUMLMarkdownExtension(
+                        server="http://www.plantuml.com/plantuml",
+                        cachedir=self.plantuml_cache,
+                        base_dir=self.markdown_instance_base_path,
+                        format="svg",
+                        classes="class1,class2",
+                        title="UML",
+                        alt="UML Diagram",
+                        theme="carbon-gray",
+                    ),
+                )
+            )
+        return self.markdown_instance
+
+    @time_function("Changing content in HTML view")
     def show(self, item: Optional[doorstop.Item]) -> None:
         self._viewed_item = item
         self._clear_history_on_load = True
@@ -99,38 +118,33 @@ class ItemRenderView:
             else:
                 items_to_render.append(item)
 
-        html = ""
-        for render_item in items_to_render:
-            html_part = self._generate_html(render_item)
-            if item is not None and render_item.uid == item.uid:
-                html += f'<div id="{HTML_ID_SELECTED}">{html_part}</div>'
-            else:
-                html += f'<div class="{HTML_CLASS_UNSELECTED}">{html_part}</div>'
-
         if item is None:
-            base_url = self.BASE_URL + "none"
+            base_path = ""
         else:
-            # Relative to document good?
-            # This is needed for images etc. in markdown to load properly...
-            base_url = self.BASE_URL + item.document.path
-        self.web_view.setHtml(HTML_TEMPLATE.format(content=html, style=MARKDOWN_CSS), base_url)
+            base_path = item.document.path
+
+        if self._render_worker is not None and self._render_worker.isRunning():
+            # If already running, terminate it first, otherwise the program will crash!
+            self._render_worker.terminate()
+            if not self._render_worker.wait(2):
+                logger.warning("Could not terminate render worker.")
+                return
+
+        self._render_worker = RenderWorker(self._get_markdown(base_path), items_to_render, item)
+        self._render_worker.result_ready.connect(self._on_render_finished)
+        self._render_worker.start()
+
+    def _on_render_finished(self, html: str, base_url: str):
+        self.web_view.setHtml(html, base_url + "/")
 
     def _on_load_finished(self, ok: bool) -> None:
         if not ok:
             logger.warning("Web page failed to load.")
+            return
 
         if self._clear_history_on_load:
             self.web_view.history().clear()
             self._clear_history_on_load = False
-
-    def _generate_html(self, item: doorstop.Item) -> str:
-        markdown_content = ""
-
-        for line in doorstop.publisher._lines_markdown([item], linkify=True):  # pylint: disable=protected-access
-            markdown_content += str(line) + "\n"
-
-        md = MarkdownIt("commonmark").enable("table")
-        return md.render(markdown_content)
 
     def _on_navigration_request(self, url: str) -> None:
         if not url.startswith(self.BASE_URL):

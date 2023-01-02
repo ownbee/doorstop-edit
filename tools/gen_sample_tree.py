@@ -20,15 +20,25 @@ attributes:
 MD_LIST = """\
   * Occaecat enim aute deserunt.
   * Eu veniam eiusmod.
-  * **Culpa** anim aute.
+  * **Culpa** anim aute.\
 """
 
 MD_TABLE = """\
   | First Header  | Second Header |
   | ------------- | ------------- |
   | Content Cell  | Content Cell  |
-  | Content Cell  | Content Cell  |
+  | Content Cell  | Content Cell  |\
 """
+
+MD_PLANY_UML = """\
+  ```plantuml
+  A --> B: MakeFood()
+  B --> C: MakeSoup()
+  C --> A: Food
+  ```\
+"""
+
+MD_IMAGE = "  ![Sample]({path})"
 
 ITEM_TEMPLATE = """\
 active: {active}
@@ -48,6 +58,10 @@ text: |
 {text2}
 
 {text3}
+
+{text4}
+
+{text5}
 """
 
 LEVELS: List[Tuple[str, ...]] = [
@@ -140,7 +154,7 @@ def gen_paragraph(word_list: List[str], seed: int, num_words: int) -> str:
     return " ".join(paragraph).capitalize()
 
 
-def generate_tree(root: Path, num_docs: int, num_req: int) -> None:
+def generate_tree(root: Path, num_docs: int, num_req: int, image: Path) -> None:
     word_list = get_word_list()
 
     prev_doc_prefix = ""
@@ -154,6 +168,10 @@ def generate_tree(root: Path, num_docs: int, num_req: int) -> None:
                 parent=f"parent: {prev_doc_prefix}" if prev_doc_prefix != "" else "",
             )
         )
+        out_image_rel = "images/sample.svg"
+        out_image = doc_root / out_image_rel
+        out_image.parent.mkdir()
+        out_image.write_bytes(image.read_bytes())
         for i_idx, level in enumerate(LevelIterator(num_req)):
             item_id = i_idx + 1
 
@@ -172,6 +190,8 @@ def generate_tree(root: Path, num_docs: int, num_req: int) -> None:
                     text1="  " + gen_paragraph(word_list, seed + 1, 10 + (i_idx % 10)),
                     text2=(MD_LIST if i_idx % 2 == 0 else ""),
                     text3=(MD_TABLE if i_idx % 4 == 0 else ""),
+                    text4=(MD_PLANY_UML if (i_idx + 1) % 10 == 0 else ""),
+                    text5=(MD_IMAGE.format(path=out_image_rel) if (i_idx + 2) % 4 == 0 else ""),
                     level=level,
                     custom1=gen_paragraph(word_list, seed + 2, 1 + (i_idx % 10)),
                     custom2=i_idx % 2 == 0,
@@ -193,13 +213,14 @@ def main():
     parser.add_argument("-d", "--num-docs", type=int, default=3, help="Number of documents in tree")
     args = parser.parse_args()
 
-    root = Path(__file__).parent.parent / "dist" / "sample-tree"
-    if root.exists():
-        shutil.rmtree(root)
-    root.mkdir(parents=True)
+    repo_root = Path(__file__).parent.parent
+    project_root = repo_root / "dist" / "sample-tree"
+    if project_root.exists():
+        shutil.rmtree(project_root)
+    project_root.mkdir(parents=True)
 
-    generate_tree(root, args.num_docs, args.count)
-    print("Tree generated at:", root.as_posix())
+    generate_tree(project_root, args.num_docs, args.count, Path(repo_root / "ui/icons/check.svg"))
+    print("Tree generated at:", project_root.as_posix())
 
 
 if __name__ == "__main__":
