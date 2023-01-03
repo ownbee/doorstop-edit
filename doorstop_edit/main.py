@@ -27,8 +27,10 @@ doorstop.Item.auto = False  # Disable automatic save.
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--verbose", action="store_true", help="Turn on verbose logging.")
-    parser.add_argument("--version", action="store_true", help="Turn on verbose logging.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="turn on verbose logging")
+    parser.add_argument("--version", action="store_true", help="turn on verbose logging")
+    parser.add_argument("--font-size", default=13, type=int, help="set custom font-size")
+    parser.add_argument("--density", default=-1, type=int, help="set density scale (make thing smaller or bigger)")
     args = parser.parse_args()
 
     if args.version:
@@ -52,6 +54,10 @@ def main() -> int:
         "success": "#17a2b8",
         # Font
         "font_family": "Roboto",
+        "font_size": args.font_size,
+        "line_height": args.font_size,
+        # Density Scale
+        "density_scale": args.density,
     }
     # qdarktheme.setup_theme()
     apply_stylesheet(app, theme="dark_teal.xml", extra=extra)
