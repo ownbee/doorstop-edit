@@ -39,7 +39,7 @@ class ItemRenderView(QObject):
     signal_render_html = Signal((list, doorstop.Item))  # type: ignore
 
     def __init__(self, web_view: QWebEngineView, doorstop_data: DoorstopData) -> None:
-        super().__init__()
+        super().__init__(web_view)
         self.web_view = web_view
         self.doorstop_data = doorstop_data
 
@@ -51,9 +51,7 @@ class ItemRenderView(QObject):
         self._clear_history_on_load = True
         self._section_mode_on = False
         self._viewed_item: Optional[doorstop.Item] = None
-        self._render_worker: Optional[RenderWorker] = None
 
-        # self._render_worker = RenderWorker(self._get_markdown(base_path), items_to_render, item)
         self._render_worker = RenderWorker()
         self._render_worker.result_ready.connect(self._on_render_finished)
         self.signal_render_html.connect(self._render_worker.render)
@@ -65,6 +63,9 @@ class ItemRenderView(QObject):
         self._viewed_item = item
         self._clear_history_on_load = True
         self._show(item)
+
+    def destroy(self):
+        self._render_worker.destroy()
 
     def set_section_mode(self, on: bool) -> None:
         self._section_mode_on = on

@@ -6,8 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QApplication, QDialog, QDockWidget, QMainWindow
 
-from doorstop_edit.dialogs.confirm_dialog import ConfirmDialog
-from doorstop_edit.dialogs.info_dialog import InfoDialog
+from doorstop_edit.dialogs import ConfirmDialog, InfoDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_edit.item_edit_view import ItemEditView
 from doorstop_edit.item_render.item_render_view import ItemRenderView
@@ -86,6 +85,10 @@ class DoorstopEdit:
 
     def show(self):
         self.window.show()
+
+    def destroy(self):
+        """Tear down resources that needs to be teared down before exit."""
+        self.item_render_view.destroy()
 
     def _update_document_list(self):
 

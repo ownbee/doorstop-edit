@@ -48,9 +48,17 @@ class RenderWorker(QObject):
         super().__init__()
 
         self.plantuml_cache = tempfile.gettempdir()
+
+        # Thread that will run until we destroy it.
         self.workerThread = QThread()
-        self.moveToThread(self.workerThread)
+        self.moveToThread(self.workerThread)  # Move this object into the thread. All slots will run on the thread.
+        self.workerThread.finished.connect(self.workerThread.deleteLater)  # type: ignore
         self.workerThread.start()
+
+    def destroy(self):
+        self.workerThread.quit()
+        if not self.workerThread.wait(5):
+            self.workerThread.terminate()
 
     def _get_markdown(self, path: str) -> markdown.Markdown:
         """Get cached markdown instance.

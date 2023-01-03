@@ -6,7 +6,7 @@ from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QLineEdit, QMenu, QTreeWidget, QTreeWidgetItem
 
-from doorstop_edit.dialogs.confirm_dialog import ConfirmDialog
+from doorstop_edit.dialogs import ConfirmDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_tree.document_item_level_tree import (
     DocumentItemLevelTree,

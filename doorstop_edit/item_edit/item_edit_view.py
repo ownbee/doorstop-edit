@@ -21,8 +21,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from doorstop_edit.dialogs.confirm_dialog import ConfirmDialog
-from doorstop_edit.dialogs.diff_dialog import DiffDialog
+from doorstop_edit.dialogs import ConfirmDialog, DiffDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_edit.item_picker_dialog import ItemPickerDialog
 from doorstop_edit.theme import Theme
@@ -356,7 +355,7 @@ class ItemEditView:
                 self._loaded_extended_attributes.append(ex_attr_name)
             else:
                 # Skip attributes that dont have a supported type.
-                print("Ignoring unsupported custom attribute type %s", type(attr))
+                logger.debug("Ignoring unsupported custom attribute type %s", type(attr))
 
     def _update_view(self):
         """Update all edit fields with item attributes."""

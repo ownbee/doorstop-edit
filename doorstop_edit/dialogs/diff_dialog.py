@@ -27,12 +27,15 @@ class DiffDialog:
         raw_diff = ""
         old_item_data = self._doorstop_data.get_original_data(item)
         if old_item_data is not None:
-            new_item_data = item._dump(item._yaml_data())
+            # Force "\n" line endings since _dump() will use OS line-ending and doorstop always
+            # saves using \n. Otherwise files will differ on Windows. This could probably be
+            # improved upon.
+            new_item_data = "\n".join(str(item._dump(item._yaml_data())).splitlines())
             diffs = difflib.unified_diff(
                 old_item_data.splitlines(True),
                 new_item_data.splitlines(True),
                 fromfile="ORIGINAL",
-                tofile="CHANGED",
+                tofile="NEW",
                 n=100,
             )
             raw_diff = "".join(diffs)

@@ -39,7 +39,7 @@ def main() -> int:
 
     logging.basicConfig(
         level=logging.WARNING,
-        format="%(asctime)s - %(message)s",
+        format="%(asctime)s [%(name)s] %(message)s",
         datefmt="%H:%M:%S",
     )
     logger.setLevel(logging.DEBUG if args.verbose else logging.INFO)
@@ -72,5 +72,6 @@ def main() -> int:
 
     editor = DoorstopEdit(app)
     editor.show()
-
-    return app.exec()
+    retval = app.exec()
+    editor.destroy()
+    return retval
