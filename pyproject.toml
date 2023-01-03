@@ -12,9 +12,7 @@ include = [
     "doorstop_edit/ui_gen/ui_*.py",
     "doorstop_edit/build_info.py"
 ]
-exclude = [
-    "*/**/test"
-]
+exclude = ["**/test/**", "**/tests/**"]
 homepage = "https://github.com/ownbee/doorstop-edit"
 repository = "https://github.com/ownbee/doorstop-edit"
 keywords = ["doorstop", "requirements-management", "documentation", "gui"]
@@ -22,17 +20,20 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Software Development :: Documentation",
     "Topic :: Text Editors :: Documentation",
     "Topic :: Text Processing :: Markup",
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-doorstop = "^2.2.post1"
+python = ">=3.9,<3.12" # PySide does not support higher version atm.
+doorstop = ">=2.2.post1"
 PySide6 = ">=6.4.0,<7.0.0"
 qt-material = "^2.12"
-markdown = "^3.4.1"
+markdown = "^3.4.0"
 plantuml-markdown = "^3.8.0"
 mdformat-myst = "^0.1.5"
 pygments = "^2.14.0"
@@ -49,7 +50,6 @@ colorama = "^0.4.6"
 autoflake = "^2.0.0"
 types-markdown = "^3.4.2.1"
 
-
 [tool.black]
 line-length = 120
 target-version = ['py310']
@@ -63,13 +63,6 @@ profile = "black"
 [tool.poetry.scripts]
 doorstop-edit = 'doorstop_edit.main:main'
 
-[tool.poetry.build]
-generate-setup-file = false
-script = "build.py"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-
-
