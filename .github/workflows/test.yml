@@ -1,0 +1,66 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  tests:
+    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+    runs-on: ${{ matrix.image }}
+    strategy:
+      matrix:
+        os: [Ubuntu, macOS, Windows]
+        python-version: ["3.9", "3.10", "3.11"]
+        include:
+          - os: Ubuntu
+            image: ubuntu-22.04
+          - os: Windows
+            image: windows-2022
+          - os: macOS
+            image: macos-12
+      fail-fast: false
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Get full Python version
+        id: full-python-version
+        run: echo version=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))") >> $GITHUB_OUTPUT
+
+      - uses: Gr1N/setup-poetry@v8
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Check lock file
+        run: poetry lock --check
+
+      - name: Install dependencies
+        run: poetry install --no-root
+
+      - name: Build resources
+        run: poetry run python build.py
+
+      - name: Run tests
+        run: poetry run pytest
+
+      - name: Code check
+        run: poetry run python tools/check_code.py
