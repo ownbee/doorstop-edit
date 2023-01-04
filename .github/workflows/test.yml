@@ -35,7 +35,7 @@ jobs:
         if: ${{ matrix.os == 'Ubuntu' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: libgl1
+          packages: libegl1
           version: 1.0
 
       - name: Set up Python ${{ matrix.python-version }}
