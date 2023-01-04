@@ -26,13 +26,20 @@ Install project:
 poetry install
 ```
 
+Generate necessary python code (resources and build info):
+
+ ```sh
+poetry run python build.py
+```
+
 ## Editing UI
 
 PySide6 comes with the tool `pyside6-designer` which is used to edit the graphical parts of the UI.
 All the UI components (`*.ui`) are located in the `ui/` folder which can be opened and edited with
 the tool.
 
-When ruinning `poetry install` Python code is generated from the `.ui` files.
+When ruinning `build.py` (descibed in section above) or simply `python tools/gen_ui.py` Python code
+is generated from the `.ui` files.
 
 
 ## Testing
