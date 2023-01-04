@@ -3,9 +3,11 @@ import logging
 import os
 import sys
 from pathlib import Path
+from typing import List, Optional
 
 import doorstop
 from doorstop import settings as doorstop_settings
+from PySide6.QtCore import QLoggingCategory
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtWidgets import QApplication
 from qt_material import apply_stylesheet
@@ -25,17 +27,17 @@ doorstop_settings.ADDREMOVE_FILES = False
 doorstop.Item.auto = False  # Disable automatic save.
 
 
-def main() -> int:
+def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true", help="turn on verbose logging")
     parser.add_argument("--version", action="store_true", help="turn on verbose logging")
     parser.add_argument("--font-size", default=13, type=int, help="set custom font-size")
     parser.add_argument("--density", default=-1, type=int, help="set density scale (make thing smaller or bigger)")
-    args = parser.parse_args()
+    args = parser.parse_args(argv[1:])
 
     if args.version:
         print(create_version_summary())
-        return 0
+        return None
 
     logging.basicConfig(
         level=logging.WARNING,
@@ -43,8 +45,6 @@ def main() -> int:
         datefmt="%H:%M:%S",
     )
     logger.setLevel(logging.DEBUG if args.verbose else logging.INFO)
-
-    app = QApplication(sys.argv)
 
     # Setup custom theme
     extra = {
@@ -70,8 +70,20 @@ def main() -> int:
     # Add custom font
     QFontDatabase.addApplicationFont(":/font/DroidSansMono.ttf")
 
-    editor = DoorstopEdit(app)
-    editor.show()
-    retval = app.exec()
-    editor.destroy()
-    return retval
+    # Disable info logs from WebEngine
+    web_engine_context_log = QLoggingCategory("qt.webenginecontext")  # type: ignore
+    web_engine_context_log.setFilterRules("*.info=false")
+
+    return DoorstopEdit(app)
+
+
+def main() -> int:
+    # As minimalistic as possible since it wont be tested.
+    app = QApplication([])
+
+    editor = setup(app, sys.argv)
+    if editor is not None:
+        editor.show()
+        return app.exec()
+
+    return 0

@@ -38,7 +38,7 @@ PySide6 comes with the tool `pyside6-designer` which is used to edit the graphic
 All the UI components (`*.ui`) are located in the `ui/` folder which can be opened and edited with
 the tool.
 
-When ruinning `build.py` (descibed in section above) or simply `python tools/gen_ui.py` Python code
+When running `build.py` (descibed in section above) or simply `python tools/gen_ui.py` Python code
 is generated from the `.ui` files.
 
 

@@ -31,6 +31,8 @@ class DoorstopEdit:
         self.window = _MainWindow()
         self.doorstop_data = DoorstopData()
 
+        app.aboutToQuit.connect(self._on_quit)  # type: ignore
+
         self.window.ui.menu_action_exit.triggered.connect(app.exit)  # type: ignore
         self.window.ui.menu_action_show_document_tree.triggered[bool].connect(  # type: ignore
             lambda checked, dock=self.window.ui.item_tree_dock_widget: self._on_toggle_dock_widget(checked, dock)
@@ -86,8 +88,9 @@ class DoorstopEdit:
     def show(self):
         self.window.show()
 
-    def destroy(self):
+    def _on_quit(self):
         """Tear down resources that needs to be teared down before exit."""
+        logger.debug("Quitting...")
         self.item_render_view.destroy()
 
     def _update_document_list(self):
