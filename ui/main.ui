@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2087</width>
-    <height>947</height>
+    <width>1555</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -121,8 +121,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>2087</width>
-     <height>20</height>
+     <width>1555</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -157,12 +157,6 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <property name="maximumSize">
-    <size>
-     <width>524286</width>
-     <height>524287</height>
-    </size>
-   </property>
    <property name="baseSize">
     <size>
      <width>0</width>
@@ -182,6 +176,12 @@
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
+    <property name="maximumSize">
+     <size>
+      <width>780</width>
+      <height>16777215</height>
+     </size>
+    </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QFrame" name="edit_item_tool_bar">
@@ -208,13 +208,13 @@
          <number>6</number>
         </property>
         <property name="leftMargin">
-         <number>6</number>
+         <number>0</number>
         </property>
         <property name="topMargin">
          <number>0</number>
         </property>
         <property name="rightMargin">
-         <number>6</number>
+         <number>0</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
@@ -375,9 +375,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
-          <width>351</width>
-          <height>835</height>
+          <y>-18</y>
+          <width>743</width>
+          <height>651</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -400,7 +400,7 @@
           <widget class="QGroupBox" name="item_edit_group">
            <property name="maximumSize">
             <size>
-             <width>800</width>
+             <width>730</width>
              <height>16777215</height>
             </size>
            </property>

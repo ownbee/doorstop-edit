@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QMenu,
     QPlainTextEdit,
+    QSizePolicy,
     QWidget,
 )
 
@@ -306,7 +307,8 @@ class ItemEditView:
         def create_text_edit(name: str, row: int) -> QPlainTextEdit:
             edit_text = QPlainTextEdit(self.ui.item_edit_group)
             edit_text.setObjectName(name + "_line_edit")
-            edit_text.setMinimumSize(QSize(200, 0))
+            edit_text.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            edit_text.setMinimumSize(QSize(200, 100))
             edit_text.setMaximumSize(QSize(620, 300))
             self.ui.item_edit_form_layout.setWidget(row, QFormLayout.ItemRole.FieldRole, edit_text)
             return edit_text
