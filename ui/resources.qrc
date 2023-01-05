@@ -3,6 +3,7 @@
     <file>DroidSansMono.ttf</file>
   </qresource>
   <qresource prefix="icons">
+    <file alias="wrap">icons/wrap.svg</file>
     <file alias="review-item">icons/check.svg</file>
     <file alias="review-doc">icons/check-all.svg</file>
     <file alias="clear-links">icons/link-box-variant-outline.svg</file>

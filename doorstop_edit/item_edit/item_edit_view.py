@@ -186,6 +186,7 @@ class ItemEditView:
         self._disable_save = False
         self._loaded_extended_attributes: List[str] = []
         self.ui.edit_item_text_format_button.clicked.connect(self._on_text_format_button_pressed)  # type: ignore
+        self.ui.edit_item_wrap_text_button.clicked.connect(self._on_wrap_text_button_pressed)  # type: ignore
         self.ui.item_edit_copy_uid_clipboard_button.clicked.connect(  # type: ignore
             self._on_copy_uid_to_clipboard_button_pressed
         )
@@ -489,6 +490,11 @@ class ItemEditView:
         menu = QMenu(self.ui.item_edit_link_list)
         menu.addActions(actions)
         menu.exec(self.ui.item_edit_link_list.mapToGlobal(pos))
+
+    def _on_wrap_text_button_pressed(self, checked: bool) -> None:
+        self.ui.item_edit_text_text_edit.setLineWrapMode(
+            QPlainTextEdit.LineWrapMode.WidgetWidth if checked else QPlainTextEdit.LineWrapMode.NoWrap
+        )
 
     def _on_text_format_button_pressed(self) -> None:
         new_text = mdformat.text(

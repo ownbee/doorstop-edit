@@ -122,7 +122,7 @@
      <x>0</x>
      <y>0</y>
      <width>1555</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -259,17 +259,14 @@
          </widget>
         </item>
         <item>
-         <spacer name="verticalSpacer">
+         <spacer name="horizontalSpacer_2">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Minimum</enum>
+           <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>0</height>
+            <width>40</width>
+            <height>20</height>
            </size>
           </property>
          </spacer>
@@ -375,9 +372,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-18</y>
-          <width>743</width>
-          <height>651</height>
+          <y>0</y>
+          <width>681</width>
+          <height>657</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -566,21 +563,58 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QToolButton" name="edit_item_text_format_button">
-                   <property name="toolTip">
-                    <string>Markdown format text (Ctrl-Q)</string>
+                  <layout class="QHBoxLayout" name="horizontalLayout_8">
+                   <property name="spacing">
+                    <number>6</number>
                    </property>
-                   <property name="text">
-                    <string>F</string>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="resources.qrc">
-                     <normaloff>:/icons/format-text</normaloff>:/icons/format-text</iconset>
-                   </property>
-                   <property name="shortcut">
-                    <string>Alt+Q</string>
-                   </property>
-                  </widget>
+                   <item>
+                    <widget class="QToolButton" name="edit_item_text_format_button">
+                     <property name="toolTip">
+                      <string>Markdown format text (Ctrl-Q)</string>
+                     </property>
+                     <property name="text">
+                      <string>F</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="resources.qrc">
+                       <normaloff>:/icons/format-text</normaloff>:/icons/format-text</iconset>
+                     </property>
+                     <property name="shortcut">
+                      <string>Alt+Q</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QToolButton" name="edit_item_wrap_text_button">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wrap text that do not fit the window.&lt;/p&gt;&lt;p&gt;This button does not affect the result written to file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="text">
+                      <string>Wrap</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="resources.qrc">
+                       <normaloff>:/icons/wrap</normaloff>:/icons/wrap</iconset>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
                  </item>
                  <item>
                   <widget class="QPlainTextEdit" name="item_edit_text_text_edit">
@@ -760,6 +794,9 @@ Blah blah blah</string>
           <layout class="QVBoxLayout" name="verticalLayout_10">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <property name="spacing">
+              <number>6</number>
+             </property>
              <item>
               <widget class="QComboBox" name="tree_combo_box">
                <item>
@@ -810,6 +847,9 @@ Blah blah blah</string>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <property name="spacing">
+              <number>6</number>
+             </property>
              <property name="sizeConstraint">
               <enum>QLayout::SetDefaultConstraint</enum>
              </property>
@@ -854,6 +894,19 @@ Blah blah blah</string>
                  <normaloff>:/icons/level-sort</normaloff>:/icons/level-sort</iconset>
                </property>
               </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </item>
