@@ -1,11 +1,9 @@
 from contextlib import contextmanager
-from unittest import TestCase, mock
-
-from PySide6.QtWidgets import QApplication
+from unittest import mock
 
 from doorstop_edit.main import setup as main_setup
 
-q_app = QApplication()
+# Using pytest-qt fixtures
 
 
 @contextmanager
@@ -18,15 +16,16 @@ def setup_ctx(*args, **kwds):
         app.quit()
 
 
-class TestMain(TestCase):
-    def test_start_no_exceptions(self):
-        with setup_ctx(q_app, ["name"]) as app:
-            self.assertIsNotNone(app)
+def test_start_no_exceptions(qapp):
+    with setup_ctx(qapp, ["name"]) as app:
+        assert app is not None
 
-    def test_arg_version(self):
-        with mock.patch("builtins.print") as mocked_print:
-            with setup_ctx(q_app, ["name", "--version"]) as app:
-                self.assertIsNone(app)
 
-        self.assertIn("Version:", mocked_print.call_args_list[0].args[0])
-        self.assertIn("Commit:", mocked_print.call_args_list[0].args[0])
+def test_arg_version(qapp):
+    with mock.patch("builtins.print") as mocked_print:
+        with setup_ctx(qapp, ["name", "--version"]) as app:
+            assert app is None
+
+    print_msg = mocked_print.call_args_list[0].args[0]
+    assert "Version:" in print_msg
+    assert "Commit:" in print_msg

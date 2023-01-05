@@ -44,8 +44,8 @@ is generated from the `.ui` files.
 
 ## Testing
 
-Tests are written with `unittest` framework and run with `pytest`. Tests are placed in the source
-structure in folders called `test`.
+Tests are written with `pytest` with `pytest-qt` plugin. Tests are placed in the source structure in
+folders called `test`.
 
 ```sh
 poetry run pytest

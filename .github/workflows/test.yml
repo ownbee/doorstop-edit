@@ -35,7 +35,7 @@ jobs:
         if: ${{ matrix.os == 'Ubuntu' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: libegl1
+          packages: libglib2.0-0 libgles2-mesa-dev libdbus-1-3 libxkbcommon-dev libxkbfile1 libnss3 libxcomposite1 libxdamage1 libxrender1 libxrandr2 libxtst6 libxi6 libasound2
           version: 1.0
 
       - name: Set up Python ${{ matrix.python-version }}
@@ -67,7 +67,9 @@ jobs:
         run: poetry run python build.py
 
       - name: Run tests
-        run: poetry run pytest
+        run: poetry run pytest -- -ra --color=yes
+        env:
+          QT_QPA_PLATFORM: offscreen # Work-around since we don't have any display.
 
       - name: Code check
         run: poetry run python tools/check_code.py

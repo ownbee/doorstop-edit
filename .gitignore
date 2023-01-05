@@ -3,4 +3,3 @@ dist/
 doorstop_edit/ui_gen/*_rc.py
 doorstop_edit/ui_gen/ui_*.py
 doorstop_edit/build_info.py
-sample-tree
