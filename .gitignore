@@ -1,4 +1,14 @@
+# Python virtual environment
+.venv
+
+# Temporary Python files
 __pycache__
+
+# Generated build files
 dist/
 doorstop_edit/ui_gen/
 doorstop_edit/build_info.py
+
+# Testing and coverage results
+.coverage
+coverage.xml

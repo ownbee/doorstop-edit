@@ -66,10 +66,15 @@ jobs:
       - name: Build resources
         run: poetry run python build.py
 
+      - name: Code check
+        run: poetry run python tools/check_code.py
+
       - name: Run tests
-        run: poetry run pytest -- -ra --color=yes
+        run: poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
         env:
           QT_QPA_PLATFORM: offscreen # Work-around since we don't have any display.
 
-      - name: Code check
-        run: poetry run python tools/check_code.py
+      - uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: true

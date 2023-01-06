@@ -39,17 +39,29 @@ pygments = "^2.14.0"
 setuptools = "^65.0.0"
 
 [tool.poetry.group.dev.dependencies]
+
+# Formatters
+black = "^22.12.0"
+autoflake = "^2.0.0"
+isort = "^5.11.4"
+
+# Linters
+mypy = "^0.991"
+flake8 = "^6.0.0"
+
+# Testing
 pytest = "^7.2.0"
 pytest-qt = "^4.2.0"
-black = "^22.12.0"
-mypy = "^0.991"
-types-requests = "^2.28.11.7"
-flake8 = "^6.0.0"
-isort = "^5.11.4"
+pytest-cov = "^4.0.0"
+
+# Tooling
 colorama = "^0.4.6"
-autoflake = "^2.0.0"
+
+# Typing
+types-requests = "^2.28.11.7"
 types-markdown = "^3.4.2.1"
 types-setuptools = "^65.6.0.3"
+
 
 [tool.black]
 line-length = 120
