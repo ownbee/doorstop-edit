@@ -1,0 +1,16 @@
+[run]
+
+branch = true
+
+omit =
+    .venv/*
+    */ui_gen/*
+    */test/*
+    */__main__.py
+
+[report]
+
+exclude_lines =
+    if __name__ == '__main__'
+
+skip_covered = true
