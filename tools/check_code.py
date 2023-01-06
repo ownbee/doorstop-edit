@@ -45,8 +45,6 @@ def check(name: str) -> Callable:
                 print(indent_text(e.stdout.decode("utf-8"), 4), end="")
                 print()
                 command = " ".join(e.cmd)
-                if len(command) > 80:
-                    command = command[:80] + " ..."
                 print_color(Fore.CYAN, "Command:")
                 print(indent_text(command, 4))
                 raise CheckError() from e
@@ -121,6 +119,7 @@ def main() -> int:
 
     all_files = get_git_files()
     py_files = get_py_files(all_files)
+    print(f"Found {len(py_files)} python files.")
 
     py_checks = [run_black, run_autoflake, run_isort, run_flake8, run_mypy]
     fail = False

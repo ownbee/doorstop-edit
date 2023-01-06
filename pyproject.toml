@@ -8,8 +8,7 @@ readme = "README.md"
 packages = [{include = "doorstop_edit"}]
 include = [
      # override .gitignore
-    "doorstop_edit/ui_gen/*_rc.py",
-    "doorstop_edit/ui_gen/ui_*.py",
+    "doorstop_edit/ui_gen/*.py",
     "doorstop_edit/build_info.py"
 ]
 exclude = ["**/test/**", "**/tests/**"]
@@ -66,6 +65,7 @@ profile = "black"
 doorstop-edit = 'doorstop_edit.main:main'
 
 [tool.mypy]
+follow_imports = 'normal'
 ignore_missing_imports = true # Ignore since not all third-party use typing.
 warn_unused_ignores = true
 warn_redundant_casts = true
@@ -74,9 +74,10 @@ warn_unreachable = true
 disallow_untyped_defs = true
 check_untyped_defs = true
 
+[[tool.mypy.overrides]]
+module = "doorstop_edit.ui_gen.*"  # Generated directory.
+follow_imports = 'silent'
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-
