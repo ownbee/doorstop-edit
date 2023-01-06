@@ -1,3 +1,4 @@
+import functools
 import logging
 from typing import Callable, List, Optional, Tuple, Union
 
@@ -196,7 +197,7 @@ class ItemTreeView:
     def _on_delete_item_button_clicked(self, item_uid: str) -> None:
         ConfirmDialog(
             f"Do you really want to delete item with UID '{item_uid}'?",
-            lambda uid=item_uid: self._on_delete_confirm(uid),
+            functools.partial(self._on_delete_confirm, item_uid),
         )
 
     def _on_delete_confirm(self, item_uid: str) -> None:

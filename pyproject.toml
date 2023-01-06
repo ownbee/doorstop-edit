@@ -50,6 +50,7 @@ isort = "^5.11.4"
 colorama = "^0.4.6"
 autoflake = "^2.0.0"
 types-markdown = "^3.4.2.1"
+types-setuptools = "^65.6.0.3"
 
 [tool.black]
 line-length = 120
@@ -64,6 +65,11 @@ profile = "black"
 [tool.poetry.scripts]
 doorstop-edit = 'doorstop_edit.main:main'
 
+[tool.mypy]
+ignore_missing_imports = true
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+

@@ -23,6 +23,7 @@ def check(name: str):
     def wrapper(func):
         def decorate(*arg, **kwargs):
             print(f"{Fore.CYAN}>>> Running {name}: {Style.RESET_ALL}", end="")
+            sys.stdout.flush()
             try:
                 retval = func(*arg, **kwargs)
                 print(f"{Fore.GREEN}PASSED.{Style.RESET_ALL}")
@@ -82,6 +83,13 @@ def run_flake8(files: List[Path], _: bool) -> None:
     subprocess.check_output(args, stderr=subprocess.PIPE)
 
 
+@check("mypy")
+def run_mypy(files: List[Path], _: bool) -> None:
+    args = ["mypy", "--color-output"]
+    args += [str(p) for p in files]
+    subprocess.check_output(args, stderr=subprocess.PIPE)
+
+
 def get_git_files() -> List[Path]:
     retval = []
     output = subprocess.check_output(["git", "ls-files"]).decode("utf-8")
@@ -105,7 +113,7 @@ def main() -> int:
     all_files = get_git_files()
     py_files = get_py_files(all_files)
 
-    py_checks = [run_black, run_autoflake, run_isort, run_flake8]
+    py_checks = [run_black, run_autoflake, run_isort, run_flake8, run_mypy]
     fail = False
     for check in py_checks:
         try:

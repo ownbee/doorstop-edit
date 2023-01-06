@@ -1012,6 +1012,18 @@ files = [
 ]
 
 [[package]]
+name = "types-docutils"
+version = "0.19.1.1"
+description = "Typing stubs for docutils"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-docutils-0.19.1.1.tar.gz", hash = "sha256:be0a51ba1c7dd215d9d2df66d6845e63c1009b4bbf4c5beb87a0d9745cdba962"},
+    {file = "types_docutils-0.19.1.1-py3-none-any.whl", hash = "sha256:a024cada35f0c13cc45eb0b68a102719018a634013690b7fef723bcbfadbd1f1"},
+]
+
+[[package]]
 name = "types-markdown"
 version = "3.4.2.1"
 description = "Typing stubs for Markdown"
@@ -1037,6 +1049,21 @@ files = [
 
 [package.dependencies]
 types-urllib3 = "<1.27"
+
+[[package]]
+name = "types-setuptools"
+version = "65.6.0.3"
+description = "Typing stubs for setuptools"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-setuptools-65.6.0.3.tar.gz", hash = "sha256:7ddd7415282fa97ab18e490206067c0cdb126b103743e72ee86783d7af6481c5"},
+    {file = "types_setuptools-65.6.0.3-py3-none-any.whl", hash = "sha256:ad729fc3a9a3946f73915eaab16ce56b30ed5ae998479253d809d76b3889ee09"},
+]
+
+[package.dependencies]
+types-docutils = "*"
 
 [[package]]
 name = "types-urllib3"
@@ -1098,4 +1125,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12" # PySide does not support higher version atm.
-content-hash = "82545a078d76682e993b189c0b1cb18fd0b87ec8075b459d07dd7a9bc9c3809b"
+content-hash = "d226595f0f222ae20b53612c902704c8e44b5c2d5ef53bf2a7b660bb58784e79"

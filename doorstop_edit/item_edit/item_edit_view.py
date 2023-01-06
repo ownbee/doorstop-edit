@@ -1,3 +1,4 @@
+import functools
 import logging
 import re
 from typing import Any, Callable, List, Optional, Tuple
@@ -245,8 +246,8 @@ class ItemEditView:
         self.links_field = Field(
             widget=self.ui.item_edit_link_list,
             item_attr="links",
-            conv_to_widget=lambda *args, dd=self._doorstop_data: links_to_list_widget(*args, doorstop_data=dd),
-            conv_from_widget=lambda *args, dd=self._doorstop_data: list_widget_to_links(*args, doorstop_data=dd),
+            conv_to_widget=functools.partial(links_to_list_widget, doorstop_data=self._doorstop_data),
+            conv_from_widget=functools.partial(list_widget_to_links, doorstop_data=self._doorstop_data),
             widget_validator=None,
         )
         self.fields.append(self.links_field)

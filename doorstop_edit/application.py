@@ -1,3 +1,4 @@
+import functools
 import logging
 from typing import List, Optional
 
@@ -202,7 +203,7 @@ Doorstop Edit
 
 {version_summary}
 """
-        InfoDialog("About", msg, "Copy", lambda text=version_summary: on_clicked(text))
+        InfoDialog("About", msg, "Copy", functools.partial(on_clicked, version_summary))
 
     def _popup_item_viewer(self, item_uid: str) -> None:
         item = self.doorstop_data.find_item(item_uid)
