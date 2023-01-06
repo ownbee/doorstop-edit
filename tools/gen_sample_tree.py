@@ -201,7 +201,7 @@ def generate_tree(root: Path, num_docs: int, num_req: int, image: Path) -> None:
         prev_doc_prefix = doc_prefix
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-c",

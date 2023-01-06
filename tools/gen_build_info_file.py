@@ -9,7 +9,7 @@ DATE = "{date}"
 """
 
 
-def gen_build_info_file():
+def gen_build_info_file() -> None:
     git_describe = subprocess.check_output(["git", "describe", "--always", "--dirty"]).decode("utf-8").strip()
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()
     date = datetime.today().isoformat()

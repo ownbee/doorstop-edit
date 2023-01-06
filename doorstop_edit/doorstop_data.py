@@ -72,7 +72,7 @@ class DoorstopData:
             for item in doc:
                 yield item
 
-    def save_item(self, item: doorstop.Item):
+    def save_item(self, item: doorstop.Item) -> None:
         """Save item to disk.
 
         This application must always call this instead of directly calling Item.save() to be able to

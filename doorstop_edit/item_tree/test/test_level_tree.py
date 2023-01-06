@@ -5,7 +5,7 @@ import doorstop
 from doorstop_edit.item_tree.document_item_level_tree import build_item_level_tree
 
 
-def test_level_tree():
+def test_level_tree() -> None:
     with TemporaryDirectory() as temp_dir:
         tree = doorstop.Tree(None, root=temp_dir)
         document = tree.create_document(value="TestDoc", path=temp_dir + "/TestDoc", digits=3, sep="-")

@@ -22,7 +22,7 @@ class RedirectOverridePage(QWebEnginePage):
         super().__init__(parent)
         self._on_navigration_request = on_navigration_request
 
-    def acceptNavigationRequest(self, url: Union[QUrl, str], _2, _3):  # noqa
+    def acceptNavigationRequest(self, url: Union[QUrl, str], _2: QWebEnginePage.NavigationType, _3: bool) -> bool:
         if isinstance(url, QUrl):
             url = url.url()
 
@@ -64,7 +64,7 @@ class ItemRenderView(QObject):
         self._clear_history_on_load = True
         self._show(item)
 
-    def destroy(self):
+    def destroy(self) -> None:
         self._render_worker.destroy()
 
     def set_section_mode(self, on: bool) -> None:
@@ -90,7 +90,7 @@ class ItemRenderView(QObject):
 
         self.signal_render_html.emit(items_to_render, item)
 
-    def _on_render_finished(self, html: str, base_url: str):
+    def _on_render_finished(self, html: str, base_url: str) -> None:
         self.web_view.setHtml(html, base_url)
 
     def _on_load_finished(self, ok: bool) -> None:

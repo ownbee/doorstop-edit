@@ -54,7 +54,7 @@ class ItemTreeView:
         self._filter_show_inactive = False
         self._filter_search_input: List[str] = []
 
-    def _update_style(self, w_item: QTreeWidgetItem, item: doorstop.Item):
+    def _update_style(self, w_item: QTreeWidgetItem, item: doorstop.Item) -> None:
 
         bg_color = None
         fg_color = None
@@ -157,7 +157,7 @@ class ItemTreeView:
         self._selected_item_uids = norm_items
         self._update()
 
-    def update(self, document_name: str):
+    def update(self, document_name: str) -> None:
         self._selected_document_name = document_name
         self._update()
 
@@ -179,7 +179,7 @@ class ItemTreeView:
         for w_item in selected_w_items:
             self._tree_widget.setCurrentItem(w_item)
 
-    def _on_item_selection_changed(self):
+    def _on_item_selection_changed(self) -> None:
         items = self._tree_widget.selectedItems()
         item_uids = [i.data(ItemTreeView.UID_COLUMN, Qt.ItemDataRole.UserRole) for i in items]
         self._selected_item_uids = item_uids
@@ -189,7 +189,7 @@ class ItemTreeView:
         self._filter_show_inactive = checked
         self._update()
 
-    def _on_search_input_changed(self, text: str):
+    def _on_search_input_changed(self, text: str) -> None:
         """Called when search box content changes."""
         self._filter_search_input = text.split()
         self._update()

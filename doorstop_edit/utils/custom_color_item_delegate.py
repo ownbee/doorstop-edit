@@ -1,7 +1,7 @@
 import logging
 from typing import Union
 
-from PySide6.QtCore import QModelIndex, QPersistentModelIndex, QRect, Qt
+from PySide6.QtCore import QModelIndex, QObject, QPersistentModelIndex, QRect, Qt
 from PySide6.QtGui import QBrush, QColor, QPainter, QPen
 from PySide6.QtWidgets import QStyle, QStyledItemDelegate, QStyleOptionViewItem
 
@@ -26,10 +26,10 @@ class CustomColorItemDelegate(QStyledItemDelegate):
 
     STYLED_ITEM_ROLE = Qt.ItemDataRole.UserRole + 10
 
-    def __init__(self, parent=None, paint_border: bool = True):
+    def __init__(self, parent: QObject, paint_border: bool = True) -> None:
         QStyledItemDelegate.__init__(self)
-        if parent is not None:
-            self.setParent(parent)
+
+        self.setParent(parent)
         self.paint_border = paint_border
         # offset item.rect - colored rect
         self.offset = 0
@@ -58,7 +58,7 @@ class CustomColorItemDelegate(QStyledItemDelegate):
         painter: QPainter,
         option: QStyleOptionViewItem,
         index: Union[QModelIndex, QPersistentModelIndex],
-    ):
+    ) -> None:
 
         # Parse out colors from item
         style_data = index.model().data(index, self.STYLED_ITEM_ROLE)

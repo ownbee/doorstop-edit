@@ -21,7 +21,7 @@ logger = logging.getLogger("gui")
 
 
 class _MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -86,15 +86,15 @@ class DoorstopEdit:
         self._update_document_list()
         self.item_render_view.show(None)  # Set empty but with correct colors (css).
 
-    def show(self):
+    def show(self) -> None:
         self.window.show()
 
-    def quit(self):
+    def quit(self) -> None:
         """Tear down resources that needs to be teared down before exit."""
         logger.debug("Quitting...")
         self.item_render_view.destroy()
 
-    def _update_document_list(self):
+    def _update_document_list(self) -> None:
 
         self.window.ui.tree_combo_box.clear()
         for name, doc in self.doorstop_data.get_documents().items():
@@ -106,7 +106,7 @@ class DoorstopEdit:
             text = name + parent_text
             self.window.ui.tree_combo_box.addItem(text, name)
 
-    def _update_item_tree(self, document: doorstop.Document):
+    def _update_item_tree(self, document: doorstop.Document) -> None:
         self.tree_view.update(document.prefix)
 
     def _update_used_document(self, document: doorstop.Document) -> None:
@@ -114,7 +114,7 @@ class DoorstopEdit:
         self.selected_document = document
         self._update_item_tree(document)
 
-    def _on_item_tree_selection_changed(self, item_uids: List[str]):
+    def _on_item_tree_selection_changed(self, item_uids: List[str]) -> None:
         if len(item_uids) == 0:
             return
 
@@ -134,7 +134,7 @@ class DoorstopEdit:
             print(e)
             return
 
-    def _on_selected_document_change(self, index: int):
+    def _on_selected_document_change(self, index: int) -> None:
         if index == -1:
             return  # Document list cleared, do nothing.
 

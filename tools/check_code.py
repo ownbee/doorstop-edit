@@ -2,11 +2,18 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
-from typing import List
+from typing import Any, Callable, List
 
 from colorama import Fore, Style, just_fix_windows_console
 
 just_fix_windows_console()
+
+
+def print_color(*args: str, newline: bool = True) -> None:
+    sys.stdout.write("".join(args) + Style.RESET_ALL)
+    if newline:
+        sys.stdout.write("\n")
+    sys.stdout.flush()
 
 
 class CheckError(RuntimeError):
@@ -19,28 +26,30 @@ def indent_text(text: str, indent: int) -> str:
     return "".join([(ind + line) for line in text.splitlines(keepends=True)])
 
 
-def check(name: str):
-    def wrapper(func):
-        def decorate(*arg, **kwargs):
-            print(f"{Fore.CYAN}>>> Running {name}: {Style.RESET_ALL}", end="")
+def check(name: str) -> Callable:
+    def wrapper(func: Callable) -> Callable:
+        def decorate(*arg: Any, **kwargs: Any) -> Any:
+            running_text = f">>> Running {name}... "
+            print_color(Fore.CYAN, Style.BRIGHT, f"{running_text}", newline=False)
             sys.stdout.flush()
             try:
                 retval = func(*arg, **kwargs)
-                print(f"{Fore.GREEN}PASSED.{Style.RESET_ALL}")
+                print_color(Fore.GREEN, "PASSED.")
                 return retval
             except subprocess.CalledProcessError as e:
-                print(f"{Fore.RED}FAILED.{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}Return code:{Fore.RED} {e.returncode}{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}Output:{Style.RESET_ALL}")
+
+                print_color(Fore.RED, "FAILED")
+                print_color(Fore.CYAN, "Return code: ", Fore.RED, str(e.returncode))
+                print_color(Fore.CYAN, "Output:")
                 print(indent_text(e.stderr.decode("utf-8"), 4), end="")
                 print(indent_text(e.stdout.decode("utf-8"), 4), end="")
                 print()
                 command = " ".join(e.cmd)
                 if len(command) > 80:
                     command = command[:80] + " ..."
-                msg = f"{Fore.CYAN}Command:\n{Style.RESET_ALL}"
-                msg += indent_text(command, 4)
-                raise CheckError(msg) from e
+                print_color(Fore.CYAN, "Command:")
+                print(indent_text(command, 4))
+                raise CheckError() from e
 
         return decorate
 
@@ -122,7 +131,7 @@ def main() -> int:
             print(e)
             fail = True
     if fail:
-        print("\nHint: Try --fix to automatically format/fix code")
+        print_color("\n", Fore.CYAN, "Hint: Try --fix to automatically format/fix code")
         return 1
 
     return 0

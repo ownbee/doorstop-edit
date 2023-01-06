@@ -44,7 +44,7 @@ class RenderWorker(QObject):
 
     result_ready = Signal((str, str))  # type: ignore
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.plantuml_cache = tempfile.gettempdir()
@@ -55,7 +55,10 @@ class RenderWorker(QObject):
         self.workerThread.finished.connect(self.workerThread.deleteLater)  # type: ignore
         self.workerThread.start()
 
-    def destroy(self):
+        self.markdown_instance: Optional[markdown.Markdown] = None
+        self.markdown_instance_base_path = ""
+
+    def destroy(self) -> None:
         self.workerThread.quit()
         if not self.workerThread.wait(5):
             self.workerThread.terminate()
@@ -66,12 +69,6 @@ class RenderWorker(QObject):
         If document changes a new PlantUMLMarkdownExtension must be created since base_dir must be
         changed to the new document path in case files are included in the plantuml.
         """
-        if not hasattr(self, "markdown_instance"):
-            self.markdown_instance = None
-
-        if not hasattr(self, "markdown_instance_doc"):
-            self.markdown_instance_base_path = ""
-
         if self.markdown_instance is None or self.markdown_instance_base_path != path:
             self.markdown_instance_base_path = path
             self.markdown_instance = markdown.Markdown(
@@ -93,7 +90,7 @@ class RenderWorker(QObject):
         return self.markdown_instance
 
     @Slot(list, doorstop.Item)
-    def render(self, items: List[doorstop.Item], highlight_item: Optional[doorstop.Item]):
+    def render(self, items: List[doorstop.Item], highlight_item: Optional[doorstop.Item]) -> None:
         html = ""
         for render_item in items:
             html_part = self._generate_html(render_item)

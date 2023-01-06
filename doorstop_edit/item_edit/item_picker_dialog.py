@@ -24,13 +24,13 @@ class ItemPickerDialog:
         self._dialog.ui.buttons.accepted.connect(self._on_accepted_button_pressed)  # type: ignore
         self._update_search_result([])
 
-    def show(self):
+    def show(self) -> None:
         self._dialog.exec_()
 
     def _on_search_input_changed(self, text: str) -> None:
         self._update_search_result(text.split())
 
-    def _update_search_result(self, search: List[str]):
+    def _update_search_result(self, search: List[str]) -> None:
         self._dialog.ui.search_result.clear()
         for item in self._doorstop_data.iter_items():
             if not match_item(item, search):

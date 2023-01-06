@@ -7,7 +7,7 @@ from pathlib import Path
 UI_FILES_DIR = Path("ui")
 
 
-def gen_ui_files():
+def gen_ui_files() -> None:
     if not UI_FILES_DIR.is_dir():
         raise RuntimeError("Please stand in repository root when running this script.")
     print("Generating UI files...")

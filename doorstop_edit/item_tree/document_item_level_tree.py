@@ -18,7 +18,7 @@ class DocumentItemLevelTree:
     def __str__(self) -> str:
         return self._to_str(0)
 
-    def _to_str(self, indent: int):
+    def _to_str(self, indent: int) -> str:
         text = ""
         for item in self.items:
             text += "> " + (". " * indent) + str(item.level).strip() + "\n"

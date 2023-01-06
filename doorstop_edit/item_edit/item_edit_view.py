@@ -66,10 +66,14 @@ def bool_to_check_box(value: Any) -> Qt.CheckState:
     return retval
 
 
-def check_box_to_bool(value: Any, _) -> bool:
+def check_box_to_bool(value: Any, _: Any) -> bool:
     if isinstance(value, int):
-        value = Qt.CheckState(value)
-    return value == Qt.CheckState.Checked
+        state_value = Qt.CheckState(value)
+    elif isinstance(value, Qt.CheckState):
+        state_value = value
+    else:
+        raise TypeError(f"Bad value type: {type(value)}")
+    return state_value == Qt.CheckState.Checked
 
 
 def level_to_text_widget(value: Any) -> str:
@@ -82,11 +86,11 @@ def level_to_text_widget(value: Any) -> str:
     raise TypeError(f"Bad value type: {type(value)}")
 
 
-def text_widget_to_level(value: str, _) -> doorstop_Level:
+def text_widget_to_level(value: str, _: Any) -> doorstop_Level:
     return doorstop_Level(value)
 
 
-def str_to_str(value: Any, _=None) -> str:
+def str_to_str(value: Any, _: Any = None) -> str:
     if value is None:
         return ""
     if isinstance(value, str):
@@ -94,7 +98,7 @@ def str_to_str(value: Any, _=None) -> str:
     raise TypeError(f"Bad value type: {type(value)}")
 
 
-def str_to_doorstop_text(value: Any, _) -> Any:
+def str_to_doorstop_text(value: Any, _: Any) -> Any:
     if not isinstance(value, str):
         raise TypeError(f"Bad value type: {type(value)}")
     return doorstop_Text(value)
@@ -282,7 +286,7 @@ class ItemEditView:
         elif isinstance(field.widget, QPlainTextEdit):
             field.widget.textChanged.connect(  # type: ignore
                 lambda field=field: self._on_field_updated(field, field.widget.toPlainText())
-            )  # type: ignore
+            )
         elif isinstance(field.widget, QCheckBox):
             field.widget.stateChanged.connect(lambda x, field=field: self._on_field_updated(field, x))  # type: ignore
         elif isinstance(field.widget, QListWidget):
@@ -361,7 +365,7 @@ class ItemEditView:
                 # Skip attributes that dont have a supported type.
                 logger.debug("Ignoring unsupported custom attribute type %s", type(attr))
 
-    def _update_view(self):
+    def _update_view(self) -> None:
         """Update all edit fields with item attributes."""
         # Disable saving while updating view, since it will trigger field changed callbacks and
         # write back to disk immidietenly which is problematic in all cases including when reverting
@@ -393,7 +397,7 @@ class ItemEditView:
         finally:
             self._disable_save = False
 
-    def _enable(self, enable: bool):
+    def _enable(self, enable: bool) -> None:
         self.ui.item_edit_diff_button.setEnabled(enable)
         self.ui.item_edit_review_button.setEnabled(enable)
         self.ui.item_edit_copy_uid_clipboard_button.setEnabled(enable)
@@ -413,7 +417,7 @@ class ItemEditView:
                 else:
                     print(f"Warning: clear not implemented for {type(field.widget)}")
 
-    def _update_review_status(self):
+    def _update_review_status(self) -> None:
         if self.item is None:
             review_status_text = ""
             review_status_class = "success"

@@ -24,7 +24,7 @@ class DiffDialog:
         self._dialog = _DiffDialog()
         self._doorstop_data = doorstop_data
 
-    def show(self, item: doorstop.Item):
+    def show(self, item: doorstop.Item) -> None:
         raw_diff = ""
         old_item_data = self._doorstop_data.get_original_data(item)
         if old_item_data is not None:

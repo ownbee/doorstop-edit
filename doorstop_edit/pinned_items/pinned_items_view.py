@@ -35,7 +35,7 @@ class PinnedItemsView:
         for s in selected:
             self._list_widget.takeItem(self._list_widget.row(s))
 
-    def _on_item_clicked(self, _) -> None:
+    def _on_item_clicked(self, _: bool) -> None:
         selected_items = self._list_widget.selectedItems()
         if len(selected_items) == 0:
             return

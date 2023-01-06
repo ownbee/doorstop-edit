@@ -22,7 +22,7 @@ def match_item(item: doorstop.Item, search: List[str]) -> bool:
     return all(result)
 
 
-def match_level(item: doorstop.Item, level: Union[str, doorstop_Level], include_parent=False) -> bool:
+def match_level(item: doorstop.Item, level: Union[str, doorstop_Level], include_parent: bool = False) -> bool:
     """Returns True if `item` is on the same level as `level`."""
 
     def level_to_parts(_level: str) -> List[int]:
