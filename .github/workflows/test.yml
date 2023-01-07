@@ -24,8 +24,6 @@ jobs:
           - os: macOS
             image: macos-12
       fail-fast: false
-    env:
-      DISPLAY: ':99.0'
     defaults:
       run:
         shell: bash
