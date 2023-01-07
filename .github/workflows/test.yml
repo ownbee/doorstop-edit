@@ -79,7 +79,7 @@ jobs:
       - name: Run tests
         run: poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
         env:
-          QT_QPA_PLATFORM: offscreen # Work-around since we don't have any display.
+          DISPLAY: ':99'
 
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.os == 'Ubuntu' && matrix.python-version == '3.10' && github.repository == 'ownbee/doorstop-edit' }}
