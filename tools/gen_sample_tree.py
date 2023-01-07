@@ -3,7 +3,7 @@ import shutil
 from pathlib import Path
 from typing import Generator, List, Tuple
 
-import requests
+REPO_ROOT = Path(__file__).parent.parent
 
 DOT_DOORSTOP_TEMPLATE = """\
 settings:
@@ -77,9 +77,8 @@ LEVELS: List[Tuple[str, ...]] = [
 
 
 def get_word_list() -> List[str]:
-    word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
-    response = requests.get(word_site, timeout=10)
-    return response.content.decode("utf-8").splitlines()
+    word_file = Path(__file__).parent / "wordlist.10000"
+    return word_file.read_text("utf-8").splitlines()
 
 
 class LevelIterator:
@@ -154,7 +153,7 @@ def gen_paragraph(word_list: List[str], seed: int, num_words: int) -> str:
     return " ".join(paragraph).capitalize()
 
 
-def generate_tree(root: Path, num_docs: int, num_req: int, image: Path) -> None:
+def generate_tree(root: Path, num_docs: int, num_req: int) -> None:
     word_list = get_word_list()
 
     prev_doc_prefix = ""
@@ -171,7 +170,7 @@ def generate_tree(root: Path, num_docs: int, num_req: int, image: Path) -> None:
         out_image_rel = "images/sample.svg"
         out_image = doc_root / out_image_rel
         out_image.parent.mkdir()
-        out_image.write_bytes(image.read_bytes())
+        out_image.write_bytes((REPO_ROOT / "ui/icons/check.svg").read_bytes())
         for i_idx, level in enumerate(LevelIterator(num_req)):
             item_id = i_idx + 1
 
@@ -213,13 +212,12 @@ def main() -> None:
     parser.add_argument("-d", "--num-docs", type=int, default=3, help="Number of documents in tree")
     args = parser.parse_args()
 
-    repo_root = Path(__file__).parent.parent
-    project_root = repo_root / "dist" / "sample-tree"
+    project_root = REPO_ROOT / "dist" / "sample-tree"
     if project_root.exists():
         shutil.rmtree(project_root)
     project_root.mkdir(parents=True)
 
-    generate_tree(project_root, args.num_docs, args.count, Path(repo_root / "ui/icons/check.svg"))
+    generate_tree(project_root, args.num_docs, args.count)
     print("Tree generated at:", project_root.as_posix())
 
 

@@ -16,9 +16,6 @@ from doorstop_edit.application import DoorstopEdit
 from doorstop_edit.theme import setup_colors
 from doorstop_edit.utils.version_summary import create_version_summary
 
-# import qdarktheme
-
-
 logger = logging.getLogger("gui")
 
 # Do not use version control system since it will slow down the UI by calling git/svn etc. on
@@ -33,6 +30,7 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
     parser.add_argument("--version", action="store_true", help="turn on verbose logging")
     parser.add_argument("--font-size", default=13, type=int, help="set custom font-size")
     parser.add_argument("--density", default=-1, type=int, help="set density scale (make thing smaller or bigger)")
+    parser.add_argument("directory", default=".", nargs="?", help="Doorstop root directory")
     args = parser.parse_args(argv[1:])
 
     if args.version:
@@ -45,6 +43,11 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
         datefmt="%H:%M:%S",
     )
     logger.setLevel(logging.DEBUG if args.verbose else logging.INFO)
+
+    root_directory = Path(args.directory)
+    if not root_directory.is_dir():
+        logger.error("Invalid argument: '%s' is not a directory.", root_directory)
+        return None
 
     # Setup custom theme
     extra = {
@@ -59,7 +62,6 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
         # Density Scale
         "density_scale": args.density,
     }
-    # qdarktheme.setup_theme()
     apply_stylesheet(app, theme="dark_teal.xml", extra=extra)
     stylesheet = app.styleSheet()
     with open(Path(__file__).parent / "custom.css", "r", encoding="utf-8") as file:
@@ -74,7 +76,7 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
     web_engine_context_log = QLoggingCategory("qt.webenginecontext")  # type: ignore
     web_engine_context_log.setFilterRules("*.info=false")
 
-    return DoorstopEdit(app)
+    return DoorstopEdit(root_directory)
 
 
 def main() -> int:
@@ -82,6 +84,7 @@ def main() -> int:
     app = QApplication([])
 
     editor = setup(app, sys.argv)
+    app.aboutToQuit.connect(editor.quit)  # type: ignore
     if editor is not None:
         editor.show()
         return app.exec()

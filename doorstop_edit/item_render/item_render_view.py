@@ -65,6 +65,7 @@ class ItemRenderView(QObject):
         self._show(item)
 
     def destroy(self) -> None:
+        self.web_view.page().deleteLater()
         self._render_worker.destroy()
 
     def set_section_mode(self, on: bool) -> None:

@@ -6,18 +6,18 @@ from PySide6.QtGui import QColor
 
 class Theme:
 
-    PRIMARY_COLOR: QColor
-    PRIMARY_LIGHT_COLOR: QColor
-    SECONDARY_COLOR: QColor
-    SECONDARY_LIGHT_COLOR: QColor
-    SECONDARY_DARK_COLOR: QColor
-    PRIMARY_TEXT_COLOR: QColor
-    SECONDARY_TEXT_COLOR: QColor
-    SUCCESS_COLOR: QColor
-    WARNING_COLOR: QColor
-    DANGER_COLOR: QColor
-    DISABLE_COLOR: QColor
-    NON_IMPROTANT_COLOR: QColor
+    PRIMARY_COLOR = QColor(0)
+    PRIMARY_LIGHT_COLOR = QColor(0)
+    SECONDARY_COLOR = QColor(0)
+    SECONDARY_LIGHT_COLOR = QColor(0)
+    SECONDARY_DARK_COLOR = QColor(0)
+    PRIMARY_TEXT_COLOR = QColor(0)
+    SECONDARY_TEXT_COLOR = QColor(0)
+    SUCCESS_COLOR = QColor(0)
+    WARNING_COLOR = QColor(0)
+    DANGER_COLOR = QColor(0)
+    DISABLE_COLOR = QColor(0)
+    NON_IMPROTANT_COLOR = QColor(0)
 
 
 def _to_color(val: Optional[str]) -> QColor:

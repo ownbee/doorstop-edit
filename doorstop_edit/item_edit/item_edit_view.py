@@ -533,7 +533,10 @@ class ItemEditView:
         DiffDialog(self._doorstop_data).show(self.item)
 
     def _on_undo_button_pressed(self) -> None:
-        ConfirmDialog("Do you really want to undo all changes made to this item?", self._undo_item)
+        if ConfirmDialog.ask(
+            self.ui.edit_item_dock_widget, "Do you really want to undo all changes made to this item?"
+        ):
+            self._undo_item()
 
     def _undo_item(self) -> None:
         if self.item is None:

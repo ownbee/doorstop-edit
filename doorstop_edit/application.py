@@ -1,5 +1,6 @@
 import functools
 import logging
+from pathlib import Path
 from typing import List, Optional
 
 import doorstop
@@ -28,13 +29,11 @@ class _MainWindow(QMainWindow):
 
 
 class DoorstopEdit:
-    def __init__(self, app: QApplication) -> None:
+    def __init__(self, root: Path) -> None:
         self.window = _MainWindow()
-        self.doorstop_data = DoorstopData()
+        self.doorstop_data = DoorstopData(root)
 
-        app.aboutToQuit.connect(self.quit)  # type: ignore
-
-        self.window.ui.menu_action_exit.triggered.connect(app.exit)  # type: ignore
+        self.window.ui.menu_action_exit.triggered.connect(QApplication.exit)  # type: ignore
         self.window.ui.menu_action_show_document_tree.triggered[bool].connect(  # type: ignore
             lambda checked, dock=self.window.ui.item_tree_dock_widget: self._on_toggle_dock_widget(checked, dock)
         )
@@ -50,7 +49,7 @@ class DoorstopEdit:
         self.item_render_view = ItemRenderView(self.window.ui.web_engine_view, self.doorstop_data)
 
         self.tree_view = ItemTreeView(
-            self.window.ui.treeWidget,
+            self.window.ui.item_tree_widget,
             self.window.ui.item_tree_search_input,
             self.doorstop_data,
         )
@@ -93,6 +92,7 @@ class DoorstopEdit:
         """Tear down resources that needs to be teared down before exit."""
         logger.debug("Quitting...")
         self.item_render_view.destroy()
+        self.window.close()
 
     def _update_document_list(self) -> None:
 
@@ -218,16 +218,16 @@ Doorstop Edit
         w.setWindowTitle(f"[{item.uid}] {item.header}")
 
     def _on_doc_review_all_button_clicked(self) -> None:
-        ConfirmDialog(
+        if not ConfirmDialog.ask(
+            self.window,
             """\
 Are you sure you want to mark all items as reviewed?
 
 WARNING: This operation cannot be undone!
 """,
-            self._review_all_items_in_selected_document,
-        )
+        ):
+            return
 
-    def _review_all_items_in_selected_document(self) -> None:
         if self.selected_document is None:
             return
 
@@ -239,16 +239,16 @@ WARNING: This operation cannot be undone!
         self.item_edit_view.update_item(None)
 
     def _on_doc_clear_all_links_button_clicked(self) -> None:
-        ConfirmDialog(
+        if not ConfirmDialog.ask(
+            self.window,
             """\
 Are you sure you want to clear all suspect links in selected document?
 
 WARNING: This operation cannot be undone!
 """,
-            self._clear_all_items_in_selected_document,
-        )
+        ):
+            return
 
-    def _clear_all_items_in_selected_document(self) -> None:
         if self.selected_document is None:
             return
 
@@ -260,16 +260,16 @@ WARNING: This operation cannot be undone!
         self.item_edit_view.update_item(None)
 
     def _on_doc_reoder_all_button_clicked(self) -> None:
-        ConfirmDialog(
+        if not ConfirmDialog.ask(
+            self.window,
             """\
 Are you sure you want do an automatic level reorder of of all items in selected document?
 
 WARNING: This operation cannot be undone!
 """,
-            self._reorder_items_in_selected_document,
-        )
+        ):
+            return
 
-    def _reorder_items_in_selected_document(self) -> None:
         if self.selected_document is None:
             return
 

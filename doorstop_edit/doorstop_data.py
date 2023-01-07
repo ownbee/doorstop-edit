@@ -17,14 +17,15 @@ class DoorstopData:
     cached longterm since it can lead to saving old data, for example.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, root: Path) -> None:
+        self._root = root
         self._tree: doorstop.Tree
         self.rebuild()
         self.original_item_data: Dict[str, str] = {}
 
     @time_function("Rebuilding document tree")
     def rebuild(self) -> None:
-        self._tree = doorstop.build()
+        self._tree = doorstop.build(cwd=str(self._root), root=str(self._root))
         self._tree.load()  # No lazy load to avoid lag spikes when user starts clicking around.
 
     def get_documents(self) -> Dict[str, doorstop.Document]:

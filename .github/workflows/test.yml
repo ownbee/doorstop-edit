@@ -24,6 +24,8 @@ jobs:
           - os: macOS
             image: macos-12
       fail-fast: false
+    env:
+      DISPLAY: ':99.0'
     defaults:
       run:
         shell: bash
@@ -35,7 +37,7 @@ jobs:
         if: ${{ matrix.os == 'Ubuntu' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: libglib2.0-0 libgles2-mesa-dev libdbus-1-3 libxkbcommon-dev libxkbfile1 libnss3 libxcomposite1 libxdamage1 libxrender1 libxrandr2 libxtst6 libxi6 libasound2
+          packages: libglib2.0-0 libgles2-mesa-dev libdbus-1-3 libxkbcommon-x11-0 libxkbfile1 libnss3 libxcomposite1 libxdamage1 libxrender1 libxrandr2 libxtst6 libxi6 libasound2 xvfb libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 x11-utils
           version: 1.0
 
       - name: Set up Python ${{ matrix.python-version }}

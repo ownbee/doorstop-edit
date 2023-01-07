@@ -1,4 +1,3 @@
-import functools
 import logging
 from typing import Callable, List, Optional, Tuple, Union
 
@@ -195,12 +194,9 @@ class ItemTreeView:
         self._update()
 
     def _on_delete_item_button_clicked(self, item_uid: str) -> None:
-        ConfirmDialog(
-            f"Do you really want to delete item with UID '{item_uid}'?",
-            functools.partial(self._on_delete_confirm, item_uid),
-        )
+        if not ConfirmDialog.ask(self._tree_widget, f"Do you really want to delete item with UID '{item_uid}'?"):
+            return
 
-    def _on_delete_confirm(self, item_uid: str) -> None:
         item = self._doorstop_data.find_item(item_uid, self._selected_document_name)
         if item is None:
             return

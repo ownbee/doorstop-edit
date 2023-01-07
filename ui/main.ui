@@ -373,7 +373,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>681</width>
+          <width>337</width>
           <height>657</height>
          </rect>
         </property>
@@ -936,7 +936,7 @@ Blah blah blah</string>
          </layout>
         </item>
         <item>
-         <widget class="QTreeWidget" name="treeWidget">
+         <widget class="QTreeWidget" name="item_tree_widget">
           <property name="contextMenuPolicy">
            <enum>Qt::ActionsContextMenu</enum>
           </property>

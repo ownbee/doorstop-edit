@@ -1,3 +1,4 @@
+import time
 from contextlib import contextmanager
 from typing import Any, Iterator, Optional
 from unittest import mock
@@ -21,11 +22,13 @@ def setup_ctx(*args: Any, **kwds: Any) -> Iterator[Optional[DoorstopEdit]]:
 
 
 def test_start_no_exceptions(qapp: QApplication) -> None:
+    time.sleep(1)  # QApplication need some time between tests in this file (unclear why).
     with setup_ctx(qapp, ["name"]) as app:
         assert app is not None
 
 
 def test_arg_version(qapp: QApplication) -> None:
+    time.sleep(1)  # QApplication need some time between tests in this file (unclear why).
     with mock.patch("builtins.print") as mocked_print:
         with setup_ctx(qapp, ["name", "--version"]) as app:
             assert app is None
