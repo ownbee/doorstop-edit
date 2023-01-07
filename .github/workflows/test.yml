@@ -24,6 +24,8 @@ jobs:
           - os: macOS
             image: macos-12
       fail-fast: false
+    env:
+      DISPLAY: :99.0
     defaults:
       run:
         shell: bash
@@ -42,7 +44,7 @@ jobs:
         if: ${{ matrix.os == 'Ubuntu' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: xvfb libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 x11-utils
+          packages: libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 x11-utils
           version: 1.0
 
       - name: Set up Python ${{ matrix.python-version }}
@@ -77,9 +79,7 @@ jobs:
         run: poetry run python tools/check_code.py
 
       - name: Run tests
-        run: poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
-        env:
-          DISPLAY: ':99'
+        run: xvfb-run poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
 
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.os == 'Ubuntu' && matrix.python-version == '3.10' && github.repository == 'ownbee/doorstop-edit' }}
