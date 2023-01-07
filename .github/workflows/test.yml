@@ -78,8 +78,13 @@ jobs:
       - name: Code check
         run: poetry run python tools/check_code.py
 
-      - name: Run tests
+      - name: Run tests (Ubuntu)
+        if: ${{ matrix.os == 'Ubuntu' }}
         run: xvfb-run poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
+
+      - name: Run tests (other)
+        if: ${{ matrix.os != 'Ubuntu' }}
+        run: poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
 
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.os == 'Ubuntu' && matrix.python-version == '3.10' && github.repository == 'ownbee/doorstop-edit' }}
