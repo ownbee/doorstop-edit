@@ -1,5 +1,6 @@
 import logging
 import tempfile
+from pathlib import Path
 from typing import List, Optional
 
 import doorstop
@@ -10,8 +11,6 @@ from PySide6.QtCore import QObject, QThread, Signal, Slot
 from doorstop_edit.item_render.markdown_css import MARKDOWN_CSS
 
 logger = logging.getLogger("gui")
-
-BASE_URL = "file://"
 
 HTML_ID_SELECTED = "selected_item"
 HTML_CLASS_UNSELECTED = "unselected"
@@ -103,13 +102,15 @@ class RenderWorker(QObject):
                 html += f'<div class="{HTML_CLASS_UNSELECTED}">{html_part}</div>'
 
         if highlight_item is None:
-            base_url = BASE_URL + "none/"
+            base_url = "."
         else:
             # Relative to document good?
             # This is needed for images etc. in markdown to load properly...
-            base_url = BASE_URL + highlight_item.document.path + "/"
+            base_url = highlight_item.document.path
 
-        self.result_ready.emit(HTML_TEMPLATE.format(content=html, style=MARKDOWN_CSS), base_url)
+        self.result_ready.emit(
+            HTML_TEMPLATE.format(content=html, style=MARKDOWN_CSS), Path(base_url).resolve().as_uri() + "/"
+        )
 
     def _generate_html(self, item: doorstop.Item) -> str:
         markdown_content = ""
