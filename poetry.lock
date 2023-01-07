@@ -890,22 +890,6 @@ dev = ["pre-commit", "tox"]
 doc = ["sphinx", "sphinx-rtd-theme"]
 
 [[package]]
-name = "pytest-xvfb"
-version = "2.0.0"
-description = "A pytest plugin to run Xvfb for tests."
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-files = [
-    {file = "pytest-xvfb-2.0.0.tar.gz", hash = "sha256:c4ba642de05499940db7f65ee111621939be513e3e75c3da9156b7235e2ed8cf"},
-    {file = "pytest_xvfb-2.0.0-py3-none-any.whl", hash = "sha256:6d21b46f099c06d6b8b200e73341da3adb73d67e9139c55d617930881779360b"},
-]
-
-[package.dependencies]
-pytest = ">=2.8.1"
-pyvirtualdisplay = ">=1.3"
-
-[[package]]
 name = "python-markdown-math"
 version = "0.6"
 description = "Math extension for Python-Markdown"
@@ -915,18 +899,6 @@ python-versions = "*"
 files = [
     {file = "python-markdown-math-0.6.tar.gz", hash = "sha256:c68d8cb9695cb7b435484403dc18941d1bad0ff148e4166d9417046a0d5d3022"},
     {file = "python_markdown_math-0.6-py2.py3-none-any.whl", hash = "sha256:d443e264cf063623a5f02b0c9730867e5172b31d49967da424ed3457c25b2848"},
-]
-
-[[package]]
-name = "pyvirtualdisplay"
-version = "3.0"
-description = "python wrapper for Xvfb, Xephyr and Xvnc"
-category = "dev"
-optional = false
-python-versions = "*"
-files = [
-    {file = "PyVirtualDisplay-3.0-py3-none-any.whl", hash = "sha256:40d4b8dfe4b8de8552e28eb367647f311f88a130bf837fe910e7f180d5477f0e"},
-    {file = "PyVirtualDisplay-3.0.tar.gz", hash = "sha256:09755bc3ceb6eb725fb07eca5425f43f2358d3bf08e00d2a9b792a1aedd16159"},
 ]
 
 [[package]]
@@ -1239,4 +1211,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12" # PySide does not support higher version atm.
-content-hash = "0669f64e801bae15a21898067e7de412898afe287b75dad8ba59777a059b00ca"
+content-hash = "f7e0bd567880ff86aabf1e7cce495e6faac2fdbb8ea8a89cd66e5b727280fe9a"
