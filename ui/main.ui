@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1555</width>
-    <height>750</height>
+    <width>1768</width>
+    <height>948</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -121,7 +121,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1555</width>
+     <width>1768</width>
      <height>20</height>
     </rect>
    </property>
@@ -178,7 +178,7 @@
    <widget class="QWidget" name="dockWidgetContents_3">
     <property name="maximumSize">
      <size>
-      <width>780</width>
+      <width>800</width>
       <height>16777215</height>
      </size>
     </property>
@@ -373,8 +373,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>337</width>
-          <height>657</height>
+          <width>780</width>
+          <height>836</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -390,14 +390,29 @@
          </size>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>6</number>
+         </property>
          <property name="sizeConstraint">
           <enum>QLayout::SetNoConstraint</enum>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
          </property>
          <item>
           <widget class="QGroupBox" name="item_edit_group">
            <property name="maximumSize">
             <size>
-             <width>730</width>
+             <width>16777215</width>
              <height>16777215</height>
             </size>
            </property>

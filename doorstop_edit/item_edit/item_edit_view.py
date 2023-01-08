@@ -306,7 +306,9 @@ class ItemEditView:
         def create_label(name: str, row: int) -> QLabel:
             label = QLabel(self.ui.item_edit_group)
             label.setObjectName(name + "_label")
-            label.setText(name)
+            label.setText(name.replace("_", " ").replace("-", " ").capitalize())
+            label.setMaximumWidth(100)  # Larger values will squeeze away space from the input boxes.
+            label.setToolTip(f"Custom attribute '{name}'")
             self.ui.item_edit_form_layout.setWidget(row, QFormLayout.ItemRole.LabelRole, label)
             return label
 
@@ -549,6 +551,9 @@ class ItemEditView:
         if self.item is None:
             return
 
+        if self.item.reviewed:
+            return
+
         self.item.review()
         self._doorstop_data.save_item(self.item)
         self._update_view()  # Redraw review status.
@@ -556,6 +561,9 @@ class ItemEditView:
 
     def _on_clear_suspect_links_button_pressed(self) -> None:
         if self.item is None:
+            return
+
+        if self.item.cleared:
             return
 
         self.item.clear()
