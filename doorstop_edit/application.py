@@ -88,6 +88,10 @@ class DoorstopEdit:
     def show(self) -> None:
         self.window.show()
 
+        if len(self.doorstop_data.get_documents()) == 0:
+            msg = "No doorstop documents found in project root."
+            InfoDialog.inform(self.window, "Empty project", msg)
+
     def quit(self) -> None:
         """Tear down resources that needs to be teared down before exit."""
         logger.debug("Quitting...")
@@ -199,11 +203,19 @@ class DoorstopEdit:
 
         version_summary = create_version_summary()
         msg = f"""\n
-Doorstop Edit
-
-{version_summary}
+<h3>Doorstop Edit</h3>
+<p>
+{"".join([f'{x}<br>' for x in version_summary.splitlines()])}
+</p>
 """
-        InfoDialog("About", msg, "Copy", functools.partial(on_clicked, version_summary))
+        InfoDialog.inform(
+            self.window,
+            "About",
+            msg,
+            extra_button_name="Copy",
+            extra_button_cb=functools.partial(on_clicked, version_summary),
+            extra_button_icon=":/icons/copy",
+        )
 
     def _popup_item_viewer(self, item_uid: str) -> None:
         item = self.doorstop_data.find_item(item_uid)

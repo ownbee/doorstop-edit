@@ -53,6 +53,8 @@ class ItemTreeView:
         self._filter_show_inactive = False
         self._filter_search_input: List[str] = []
 
+        self._tree_widget.clear()  # Clear demo stuff created in designer.
+
     def _update_style(self, w_item: QTreeWidgetItem, item: doorstop.Item) -> None:
 
         bg_color = None

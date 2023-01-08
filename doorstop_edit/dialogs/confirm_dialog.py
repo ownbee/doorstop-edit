@@ -11,8 +11,8 @@ class _ConfirmDialog(QDialog):
 
 
 class ConfirmDialog:
-    @classmethod
-    def ask(cls, parent: QWidget, question: str) -> bool:
+    @staticmethod
+    def ask(parent: QWidget, question: str) -> bool:
         dialog = _ConfirmDialog(parent)
         dialog.ui.text.setText(question)
         return dialog.exec() == QDialog.DialogCode.Accepted
