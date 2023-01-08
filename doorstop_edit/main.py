@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -22,6 +23,20 @@ logger = logging.getLogger("gui")
 # every item save.
 doorstop_settings.ADDREMOVE_FILES = False
 doorstop.Item.auto = False  # Disable automatic save.
+
+
+def load_custom_css() -> str:
+    with open(Path(__file__).parent / "custom.css", "r", encoding="utf-8") as file:
+        custom_css = file.read()
+
+    result = re.findall("__(.*)__", custom_css)
+    for replace_val in result:
+        if replace_val in os.environ:
+            custom_css = custom_css.replace("__" + replace_val + "__", os.environ[replace_val])
+        else:
+            raise RuntimeError(f"Failed to expand {replace_val} in css")
+
+    return custom_css
 
 
 def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
@@ -63,9 +78,7 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
         "density_scale": args.density,
     }
     apply_stylesheet(app, theme="dark_teal.xml", extra=extra)
-    stylesheet = app.styleSheet()
-    with open(Path(__file__).parent / "custom.css", "r", encoding="utf-8") as file:
-        app.setStyleSheet(stylesheet + file.read().format(**os.environ))
+    app.setStyleSheet(app.styleSheet() + load_custom_css())
 
     setup_colors(extra)
 
