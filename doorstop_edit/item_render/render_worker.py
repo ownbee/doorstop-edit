@@ -85,7 +85,7 @@ class RenderWorker(QObject):
                         classes="class1,class2",
                         title="UML",
                         alt="UML Diagram",
-                        theme="carbon-gray",
+                        theme="aws-orange",
                     ),
                 )
             )
