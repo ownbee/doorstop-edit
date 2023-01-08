@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "doorstop-edit"
-version = "0.1.0-beta5"
+version = "0.1.0-beta6"
 description = "Cross-platform doorstop GUI editor"
 authors = ["Alexander Ernfridsson <ernfridsson@gmail.com>"]
 license = "MIT"
