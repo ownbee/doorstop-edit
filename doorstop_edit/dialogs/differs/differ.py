@@ -31,4 +31,4 @@ class Differ:
 
     def get_history_metadata(self, index: int) -> ChangeMetadata:
         """Get metadata of history item."""
-        return Differ.ChangeMetadata("", datetime.datetime.fromtimestamp(0))
+        return Differ.ChangeMetadata("", datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc))
