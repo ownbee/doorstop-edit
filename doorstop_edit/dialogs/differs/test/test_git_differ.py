@@ -1,10 +1,10 @@
-from doorstop_edit.dialogs.differs import GitDiffer
-from pathlib import Path
-from unittest.mock import Mock, patch
-from pytest import MonkeyPatch
 import subprocess
+from pathlib import Path
 from typing import Any
 
+from pytest import MonkeyPatch
+
+from doorstop_edit.dialogs.differs import GitDiffer
 
 GIT_LOG_OUTPUT = """\
 f1553da (HEAD -> master) Change 3

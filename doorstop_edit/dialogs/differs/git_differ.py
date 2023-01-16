@@ -1,9 +1,10 @@
-from doorstop_edit.dialogs.differs.differ import Differ
-from pathlib import Path
-import subprocess
 import datetime
 import logging
 import re
+import subprocess
+from pathlib import Path
+
+from doorstop_edit.dialogs.differs.differ import Differ
 
 logger = logging.getLogger("gui")
 

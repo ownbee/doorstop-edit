@@ -1,6 +1,8 @@
-from doorstop_edit.dialogs.differs import Differ
 from pathlib import Path
+
 import pytest
+
+from doorstop_edit.dialogs.differs import Differ
 
 
 def test_default_returns() -> None:

@@ -1,7 +1,8 @@
-from doorstop_edit.dialogs.differs.differ import Differ
-from pathlib import Path
 import difflib
+from pathlib import Path
 from typing import Optional
+
+from doorstop_edit.dialogs.differs.differ import Differ
 
 
 class SimpleDiffer(Differ):

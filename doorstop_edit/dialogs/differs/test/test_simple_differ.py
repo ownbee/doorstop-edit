@@ -1,6 +1,7 @@
-from doorstop_edit.dialogs.differs import SimpleDiffer
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
+from doorstop_edit.dialogs.differs import SimpleDiffer
 
 
 def test_simple_differ() -> None:
@@ -8,7 +9,7 @@ def test_simple_differ() -> None:
     with tempfile.TemporaryDirectory() as tmp_dir:
         path = Path(tmp_dir) / "some_file.txt"
         differ = SimpleDiffer(data, path)
-        assert differ.support_history() == False
+        assert not differ.support_history()
         assert differ.get_diff(0) == ""  # Return empty when file does not exits
         path.write_text(data, "utf-8")
         assert differ.get_diff(0) == ""  # Return empty when content is same
