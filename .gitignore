@@ -12,3 +12,4 @@ doorstop_edit/build_info.py
 # Testing and coverage results
 .coverage
 coverage.xml
+htmlcov/

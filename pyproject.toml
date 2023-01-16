@@ -11,7 +11,7 @@ include = [
     "doorstop_edit/ui_gen/*.py",
     "doorstop_edit/build_info.py"
 ]
-exclude = ["**/test/**", "**/tests/**"]
+exclude = ["**/test/**", "**/tests/**", "**/conftest.py"]
 homepage = "https://github.com/ownbee/doorstop-edit"
 repository = "https://github.com/ownbee/doorstop-edit"
 keywords = ["doorstop", "requirements-management", "documentation", "gui"]

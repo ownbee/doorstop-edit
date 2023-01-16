@@ -1,4 +1,3 @@
-import tempfile
 from pathlib import Path
 from typing import Iterator
 from unittest.mock import patch
@@ -9,20 +8,9 @@ from PySide6.QtCore import Qt
 from pytestqt.qtbot import QtBot
 
 from doorstop_edit.application import DoorstopEdit
+from doorstop_edit.conftest import NUM_DOC, NUM_ITEMS_PER_DOC
 from doorstop_edit.dialogs import ConfirmDialog
 from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
-from tools.gen_sample_tree import generate_tree
-
-NUM_DOC = 3
-NUM_ITEMS_PER_DOC = 30
-
-
-@pytest.fixture()
-def tree_root() -> Iterator[Path]:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        root = Path(temp_dir)
-        generate_tree(root, NUM_DOC, NUM_ITEMS_PER_DOC)
-        yield root
 
 
 @pytest.fixture()

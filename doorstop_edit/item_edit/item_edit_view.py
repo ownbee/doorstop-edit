@@ -532,7 +532,7 @@ class ItemEditView:
     def _on_diff_button_pressed(self) -> None:
         if self.item is None:
             return
-        DiffDialog(self._doorstop_data).show(self.item)
+        DiffDialog.show(self.item, self._doorstop_data)
 
     def _on_undo_button_pressed(self) -> None:
         if ConfirmDialog.ask(

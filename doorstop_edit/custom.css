@@ -19,3 +19,42 @@ QMenu::item,
 QMenuBar::item {
   height: 16px;
 }
+
+QDialog QToolButton {
+  background: __QTMATERIAL_SECONDARYDARKCOLOR__;
+  border: 0px;
+  height: 24px;
+  margin: 3px;
+  padding: 3px;
+  border-right: 12px solid __QTMATERIAL_SECONDARYDARKCOLOR__;
+  border-left: 12px solid __QTMATERIAL_SECONDARYDARKCOLOR__;
+}
+
+QDialog QToolButton:hover {
+  background: __QTMATERIAL_SECONDARYLIGHTCOLOR__;
+  border-right: 12px solid __QTMATERIAL_SECONDARYLIGHTCOLOR__;
+  border-left: 12px solid __QTMATERIAL_SECONDARYLIGHTCOLOR__;
+}
+
+QDialog QToolButton:pressed {
+  background: __QTMATERIAL_SECONDARYCOLOR__;
+  border-right: 12px solid __QTMATERIAL_SECONDARYCOLOR__;
+  border-left: 12px solid __QTMATERIAL_SECONDARYCOLOR__;
+}
+
+QDialog QToolButton:checked {
+  background: __QTMATERIAL_SECONDARYLIGHTCOLOR__;
+  border-left: 12px solid __QTMATERIAL_SECONDARYLIGHTCOLOR__;
+  border-right: 12px solid __QTMATERIAL_PRIMARYCOLOR__;
+}
+
+QDialog QToolButton:disabled {
+  background: __QTMATERIAL_SECONDARYCOLOR__;
+  border: 0px;
+  height: 24px;
+  margin: 3px;
+  padding: 3px;
+  border-radius: 0px;
+  border-right: 12px solid __QTMATERIAL_SECONDARYCOLOR__;
+  border-left: 12px solid __QTMATERIAL_SECONDARYCOLOR__;
+}
