@@ -90,4 +90,4 @@ class GitDiffer(Differ):
             return Differ.ChangeMetadata(author, datetime.datetime.fromtimestamp(timestamp))
 
         logger.error("Could not parse 'git show' data from: %s" "\n".join(data))
-        return Differ.ChangeMetadata("Error", datetime.datetime.fromtimestamp(0))
+        return Differ.ChangeMetadata("Error", datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc))
