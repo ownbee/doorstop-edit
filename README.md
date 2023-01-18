@@ -30,6 +30,7 @@ editor use the doorstop API whenever possible to behave the same way as doorstop
 **TODO list:**
 
 * Add and remove document.
+* Remembering changed layout between restarts.
 * Validating documents and items in a user-friendly manner.
 * File watcher for syncing/refreshing when changes made on disk.
 * Ability to change project root.
