@@ -4,13 +4,13 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import doorstop
 from doorstop import settings as doorstop_settings
-from PySide6.QtCore import QLoggingCategory
-from PySide6.QtGui import QFontDatabase
-from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QLoggingCategory, QSize
+from PySide6.QtGui import QFontDatabase, QIcon, Qt
+from PySide6.QtWidgets import QApplication, QSplashScreen
 from qt_material import apply_stylesheet
 
 from doorstop_edit.application import DoorstopEdit
@@ -25,6 +25,17 @@ doorstop_settings.ADDREMOVE_FILES = False
 doorstop.Item.auto = False  # Disable automatic save.
 
 
+def show_splash_screen() -> QSplashScreen:
+    pixmap = QIcon(":/icons/favicon").pixmap(QSize(400, 400))
+    splash = QSplashScreen(pixmap)
+    splash.showMessage(
+        "Loading doorstop tree...", Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.white
+    )
+    splash.show()
+    QApplication.processEvents()
+    return splash
+
+
 def load_custom_css() -> str:
     with open(Path(__file__).parent / "custom.css", "r", encoding="utf-8") as file:
         custom_css = file.read()
@@ -37,6 +48,25 @@ def load_custom_css() -> str:
             raise RuntimeError(f"Failed to expand {replace_val} in css")
 
     return custom_css
+
+
+def setup_style(app: QApplication, args: Any) -> None:
+    # Setup custom theme
+    extra = {
+        # Button colors
+        "danger": "#dc3545",
+        "warning": "#ffc107",
+        "success": "#17a2b8",
+        # Font
+        "font_family": "Roboto",
+        "font_size": args.font_size,
+        "line_height": args.font_size,
+        # Density Scale
+        "density_scale": args.density,
+    }
+    apply_stylesheet(app, theme="dark_teal.xml", extra=extra)
+    app.setStyleSheet(app.styleSheet() + load_custom_css())
+    setup_colors(extra)
 
 
 def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
@@ -64,32 +94,20 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
         logger.error("Invalid argument: '%s' is not a directory.", root_directory)
         return None
 
-    # Setup custom theme
-    extra = {
-        # Button colors
-        "danger": "#dc3545",
-        "warning": "#ffc107",
-        "success": "#17a2b8",
-        # Font
-        "font_family": "Roboto",
-        "font_size": args.font_size,
-        "line_height": args.font_size,
-        # Density Scale
-        "density_scale": args.density,
-    }
-    apply_stylesheet(app, theme="dark_teal.xml", extra=extra)
-    app.setStyleSheet(app.styleSheet() + load_custom_css())
-
-    setup_colors(extra)
+    splash = show_splash_screen()
 
     # Add custom font
     QFontDatabase.addApplicationFont(":/font/DroidSansMono.ttf")
+
+    setup_style(app, args)
 
     # Disable info logs from WebEngine
     web_engine_context_log = QLoggingCategory("qt.webenginecontext")  # type: ignore
     web_engine_context_log.setFilterRules("*.info=false")
 
-    return DoorstopEdit(root_directory)
+    editor = DoorstopEdit(root_directory)
+    splash.finish(editor.window)
+    return editor
 
 
 def main() -> int:
