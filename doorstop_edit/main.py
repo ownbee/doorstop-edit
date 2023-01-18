@@ -25,14 +25,14 @@ doorstop_settings.ADDREMOVE_FILES = False
 doorstop.Item.auto = False  # Disable automatic save.
 
 
-def show_splash_screen() -> QSplashScreen:
+def show_splash_screen(app: QApplication) -> QSplashScreen:
     pixmap = QIcon(":/icons/favicon").pixmap(QSize(400, 400))
     splash = QSplashScreen(pixmap)
     splash.showMessage(
         "Loading doorstop tree...", Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.white
     )
     splash.show()
-    QApplication.processEvents()
+    app.processEvents()
     return splash
 
 
@@ -94,8 +94,6 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
         logger.error("Invalid argument: '%s' is not a directory.", root_directory)
         return None
 
-    splash = show_splash_screen()
-
     # Add custom font
     QFontDatabase.addApplicationFont(":/font/DroidSansMono.ttf")
 
@@ -105,19 +103,21 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
     web_engine_context_log = QLoggingCategory("qt.webenginecontext")  # type: ignore
     web_engine_context_log.setFilterRules("*.info=false")
 
+    app.processEvents()  # Make sure splash screen shows.
+
     editor = DoorstopEdit(root_directory)
-    splash.finish(editor.window)
     return editor
 
 
 def main() -> int:
     # As minimalistic as possible since it wont be tested.
     app = QApplication([])
-
+    splash = show_splash_screen(app)
     editor = setup(app, sys.argv)
     app.aboutToQuit.connect(editor.quit)  # type: ignore
     if editor is not None:
         editor.show()
+        splash.finish(editor.window)
         return app.exec()
 
     return 0

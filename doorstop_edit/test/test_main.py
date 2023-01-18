@@ -4,6 +4,7 @@ from typing import Any, Iterator, Optional
 from unittest import mock
 
 from PySide6.QtWidgets import QApplication
+from pytestqt.qtbot import QtBot
 
 from doorstop_edit.application import DoorstopEdit
 from doorstop_edit.main import setup as main_setup
@@ -21,10 +22,12 @@ def setup_ctx(*args: Any, **kwds: Any) -> Iterator[Optional[DoorstopEdit]]:
         app.quit()
 
 
-def test_start_no_exceptions(qapp: QApplication) -> None:
+def test_start_no_exceptions(qtbot: QtBot, qapp: QApplication) -> None:
+    qapp.sync()
     time.sleep(1)  # QApplication need some time between tests in this file (unclear why).
     with setup_ctx(qapp, ["name"]) as app:
         assert app is not None
+        qtbot.add_widget(app.window)
 
 
 def test_arg_version(qapp: QApplication) -> None:
