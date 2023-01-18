@@ -76,7 +76,11 @@ class ItemTreeView:
         if not bool(item.normative) and str(item.level).endswith(".0"):
             # Header-only item.
             font_style = "b"
-            text = item.text.splitlines()[0]
+            test_lines = item.text.splitlines()
+            if len(test_lines) > 0:
+                text = test_lines[0]
+            else:
+                text = ""
 
         if self._doorstop_data.has_item_changed(item):
             text = "•" + text
