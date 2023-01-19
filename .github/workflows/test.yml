@@ -12,6 +12,7 @@ jobs:
   tests:
     name: ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.image }}
+    timeout-minutes: 10
     strategy:
       matrix:
         os: [Ubuntu, macOS, Windows]
