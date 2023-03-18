@@ -37,6 +37,7 @@ plantuml-markdown = "^3.8.0"
 mdformat-myst = "^0.1.5"
 pygments = "^2.14.0"
 setuptools = "^65.0.0"
+pyspellchecker = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
 

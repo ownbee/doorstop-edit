@@ -30,6 +30,7 @@ from doorstop_edit.theme import Theme
 from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
 from doorstop_edit.utils.custom_color_item_delegate import CustomColorItemDelegate
 from doorstop_edit.utils.debug_timer import time_function
+from doorstop_edit.utils.spell_checker import TextEditSpellChecker
 
 logger = logging.getLogger("gui")
 
@@ -202,6 +203,9 @@ class ItemEditView:
             self._on_clear_suspect_links_button_pressed
         )
 
+        self.spell_checkers = []
+        self.spell_checkers.append(TextEditSpellChecker(self.ui.item_edit_text_text_edit.document()))
+
         self.fields = [
             Field(
                 widget=self.ui.item_edit_active_check_box,
@@ -319,6 +323,7 @@ class ItemEditView:
             edit_text.setMinimumSize(QSize(200, 100))
             edit_text.setMaximumSize(QSize(620, 300))
             self.ui.item_edit_form_layout.setWidget(row, QFormLayout.ItemRole.FieldRole, edit_text)
+            self.spell_checkers.append(TextEditSpellChecker(edit_text.document()))
             return edit_text
 
         def create_check_box(name: str, row: int) -> QCheckBox:
@@ -508,7 +513,7 @@ class ItemEditView:
             self.ui.item_edit_text_text_edit.toPlainText(),
             options={
                 "number": True,  # switch on consecutive numbering of ordered lists
-                "wrap": 80,  # set word wrap width to 60 characters
+                "wrap": 80,
             },
             extensions=["myst"],
         )

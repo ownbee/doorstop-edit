@@ -921,6 +921,18 @@ files = [
 shiboken6 = "6.4.2"
 
 [[package]]
+name = "pyspellchecker"
+version = "0.7.1"
+description = "Pure python spell checker based on work by Peter Norvig"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pyspellchecker-0.7.1-py3-none-any.whl", hash = "sha256:9fac7e3abf2a11eb1660906dc513bc9f92bd49795f136bb1a56ac1f59f5498b0"},
+    {file = "pyspellchecker-0.7.1.tar.gz", hash = "sha256:ed46a7218a363ef1a348fac14c9fef95b0aca5daa7744389d70843fcc0961b31"},
+]
+
+[[package]]
 name = "pytest"
 version = "7.2.1"
 description = "pytest: simple powerful testing with Python"
@@ -1304,4 +1316,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12" # PySide does not support higher version atm.
-content-hash = "f7e0bd567880ff86aabf1e7cce495e6faac2fdbb8ea8a89cd66e5b727280fe9a"
+content-hash = "a54e9680ba29f576e185f87c674cb90ae4ef0b5b5b88f98a7aefdca994994112"
