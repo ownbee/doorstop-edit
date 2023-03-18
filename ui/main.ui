@@ -585,7 +585,7 @@
                    <item>
                     <widget class="QToolButton" name="edit_item_text_format_button">
                      <property name="toolTip">
-                      <string>Markdown format text (Ctrl-Q)</string>
+                      <string>Markdown format text (Alt-Q)</string>
                      </property>
                      <property name="text">
                       <string>F</string>
