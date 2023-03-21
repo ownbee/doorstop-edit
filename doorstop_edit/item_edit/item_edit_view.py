@@ -1,7 +1,7 @@
 import functools
 import logging
 import re
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import doorstop
 import mdformat
@@ -190,7 +190,7 @@ class ItemEditView:
         self.on_open_viewer: Callable[[str], None] = lambda x: logger.info("on_open_viewer not connected")
         self.item: Optional[doorstop.Item] = None
         self._disable_save = False
-        self._loaded_extended_attributes: List[str] = []
+        self._loaded_extended_attributes: Dict[str, Tuple[QWidget, QWidget]] = {}
         self.ui.edit_item_text_format_button.clicked.connect(self._on_text_format_button_pressed)  # type: ignore
         self.ui.edit_item_wrap_text_button.clicked.connect(self._on_wrap_text_button_pressed)  # type: ignore
         self.ui.item_edit_copy_uid_clipboard_button.clicked.connect(  # type: ignore
@@ -303,8 +303,7 @@ class ItemEditView:
 
         We are assuming that all items have important extendend attributes and that extended
         attributes have the same type. Therefore extended attributes are added/parsed when an item
-        is selected/edited. Found extended attributes will be permanently stored and visible for
-        consecutive items (which might not have them).
+        is selected/edited (if not None).
         """
 
         def create_label(name: str, row: int) -> QLabel:
@@ -322,6 +321,7 @@ class ItemEditView:
             edit_text.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
             edit_text.setMinimumSize(QSize(200, 100))
             edit_text.setMaximumSize(QSize(620, 300))
+            edit_text.setLineWrapMode(self.ui.item_edit_text_text_edit.lineWrapMode())
             self.ui.item_edit_form_layout.setWidget(row, QFormLayout.ItemRole.FieldRole, edit_text)
             self.spell_checkers.append(TextEditSpellChecker(edit_text.document()))
             return edit_text
@@ -332,18 +332,24 @@ class ItemEditView:
             self.ui.item_edit_form_layout.setWidget(row, QFormLayout.ItemRole.FieldRole, check_box)
             return check_box
 
-        ex_attr_name: str
+        default_attrs: Dict[str, Any] = {}
+        if item.document._attribute_defaults is not None:
+            default_attrs = item.document._attribute_defaults
 
-        for ex_attr_name in item.extended:
+        ext_attrs: Dict[str, Optional[type]] = {}
+        for name, val in default_attrs.items():
+            if name not in ["text", "level", "active", "normative", "derived", "header", "reviewed"]:
+                ext_attrs[name] = type(val)
+        for name in item.extended:
+            ext_attrs[name] = type(item.get(name))
+
+        for ex_attr_name, ex_attr_type in ext_attrs.items():
             if ex_attr_name in self._loaded_extended_attributes:
                 # Already loaded.
                 continue
             row = self.ui.item_edit_form_layout.count() + 1
-            attr = item.get(ex_attr_name)
-            if attr is None:
-                pass  # Do not parse None types, wait for some other time so we can get the proper type.
-            if isinstance(attr, str):
-                create_label(ex_attr_name, row)
+            if ex_attr_type is str:
+                label = create_label(ex_attr_name, row)
                 edit_text_widget = create_text_edit(ex_attr_name, row)
                 field = Field(
                     widget=edit_text_widget,
@@ -352,11 +358,13 @@ class ItemEditView:
                     conv_to_widget=str_to_str,
                     widget_validator=None,
                 )
+                if ex_attr_name in default_attrs:
+                    edit_text_widget.setPlaceholderText(item.document._attribute_defaults[ex_attr_name])
                 self._connect_field(field)
                 self.fields.append(field)
-                self._loaded_extended_attributes.append(ex_attr_name)
-            elif isinstance(attr, bool):
-                create_label(ex_attr_name, row)
+                self._loaded_extended_attributes[ex_attr_name] = (label, edit_text_widget)
+            elif ex_attr_type is bool:
+                label = create_label(ex_attr_name, row)
                 check_box_widget = create_check_box(ex_attr_name, row)
                 field = Field(
                     widget=check_box_widget,
@@ -367,10 +375,16 @@ class ItemEditView:
                 )
                 self._connect_field(field)
                 self.fields.append(field)
-                self._loaded_extended_attributes.append(ex_attr_name)
+                self._loaded_extended_attributes[ex_attr_name] = (label, check_box_widget)
             else:
                 # Skip attributes that dont have a supported type.
-                logger.debug("Ignoring unsupported custom attribute type %s", type(attr))
+                logger.debug("Ignoring unsupported custom attribute type %s", ex_attr_type)
+
+        # Only show relevant custom attributes.
+        for loaded_name, loaded_widgets in self._loaded_extended_attributes.items():
+            hide = loaded_name not in ext_attrs
+            loaded_widgets[0].setHidden(hide)
+            loaded_widgets[1].setHidden(hide)
 
     def _update_view(self) -> None:
         """Update all edit fields with item attributes."""
