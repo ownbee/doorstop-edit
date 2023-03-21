@@ -504,13 +504,23 @@ class ItemEditView:
         menu.exec(self.ui.item_edit_link_list.mapToGlobal(pos))
 
     def _on_wrap_text_button_pressed(self, checked: bool) -> None:
-        self.ui.item_edit_text_text_edit.setLineWrapMode(
-            QPlainTextEdit.LineWrapMode.WidgetWidth if checked else QPlainTextEdit.LineWrapMode.NoWrap
-        )
+        for widget in [f.widget for f in self.fields] + [self.ui.item_edit_text_text_edit]:
+            if isinstance(widget, QPlainTextEdit):
+                widget.setLineWrapMode(
+                    QPlainTextEdit.LineWrapMode.WidgetWidth if checked else QPlainTextEdit.LineWrapMode.NoWrap
+                )
 
     def _on_text_format_button_pressed(self) -> None:
+        widget: QPlainTextEdit = self.ui.item_edit_text_text_edit
+
+        # Choose custom field instead if it is focused. This only works if shortcut is used.
+        for field in self.fields:
+            if isinstance(field.widget, QPlainTextEdit):
+                if field.widget.hasFocus():
+                    widget = field.widget
+
         new_text = mdformat.text(
-            self.ui.item_edit_text_text_edit.toPlainText(),
+            widget.toPlainText(),
             options={
                 "number": True,  # switch on consecutive numbering of ordered lists
                 "wrap": 80,
@@ -520,16 +530,16 @@ class ItemEditView:
         # Using cursor for not bypassing undo buffer (Ctrl-Z).
         #
         # Copy of cursor but can be used since it has pointer to correct document.
-        cursor = self.ui.item_edit_text_text_edit.textCursor()
+        cursor = widget.textCursor()
         pos = cursor.position()  # Remember curret pos for restoring after operation
         cursor.beginEditBlock()  # For one entry in undo buffer.
         cursor.select(QTextCursor.SelectionType.Document)  # Select all text in document.
         cursor.removeSelectedText()
         cursor.insertText(new_text)
         cursor.endEditBlock()
-        self.ui.item_edit_text_text_edit.setFocus()
+        widget.setFocus()
         cursor.setPosition(pos)
-        self.ui.item_edit_text_text_edit.setTextCursor(cursor)  # Set back the copied cursor for position update.
+        widget.setTextCursor(cursor)  # Set back the copied cursor for position update.
 
     def _on_copy_uid_to_clipboard_button_pressed(self) -> None:
         QGuiApplication.clipboard().setText(self.ui.item_edit_uid.text())
