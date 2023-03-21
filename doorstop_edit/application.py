@@ -168,11 +168,9 @@ class DoorstopEdit:
             item = self.doorstop_data.find_item(item_uid)
             if item is not None:
                 try:
-                    print(level)
                     level = str(item.level)
                     level_last = int(level[-1])
                     level = level[:-1] + str(level_last + 1)
-                    print(level)
                 except Exception:
                     pass
 
