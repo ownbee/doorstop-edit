@@ -373,7 +373,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>780</width>
+          <width>333</width>
           <height>836</height>
          </rect>
         </property>
@@ -585,7 +585,7 @@
                    <item>
                     <widget class="QToolButton" name="edit_item_text_format_button">
                      <property name="toolTip">
-                      <string>Markdown format text (Alt-Q)</string>
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Markdown format text (Alt-Q)&lt;/p&gt;&lt;p&gt;If shortcut is used the focued text field are formatted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                      <property name="text">
                       <string>F</string>
@@ -602,7 +602,7 @@
                    <item>
                     <widget class="QToolButton" name="edit_item_wrap_text_button">
                      <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wrap text that do not fit the window.&lt;/p&gt;&lt;p&gt;This button does not affect the result written to file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wrap text that do not fit the window. &lt;/p&gt;&lt;p&gt;Applied to custom text input fields as well. &lt;/p&gt;&lt;p&gt;This button does not affect the result written to file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                      <property name="text">
                       <string>Wrap</string>
