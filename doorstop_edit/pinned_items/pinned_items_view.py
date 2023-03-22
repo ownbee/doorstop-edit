@@ -18,8 +18,8 @@ class PinnedItemsView:
             "on_selected_item not connected, called with: %d", item_uid
         )
         self._list_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self._list_widget.customContextMenuRequested.connect(self._prepare_links_context_menu)  # type: ignore
-        self._list_widget.itemClicked.connect(self._on_item_clicked)  # type: ignore
+        self._list_widget.customContextMenuRequested.connect(self._prepare_links_context_menu)
+        self._list_widget.itemClicked.connect(self._on_item_clicked)
 
     def add(self, item_uid: str) -> None:
         item = self._doorstop_data.find_item(item_uid)
@@ -50,7 +50,7 @@ class PinnedItemsView:
 
         if w_item is not None:
             remove_action = QAction(QIcon(":/icons/unpin"), "Unpin", self._list_widget)
-            remove_action.triggered.connect(self._remove_selected)  # type: ignore
+            remove_action.triggered.connect(self._remove_selected)
             actions.append(remove_action)
 
         menu = QMenu(self._list_widget)

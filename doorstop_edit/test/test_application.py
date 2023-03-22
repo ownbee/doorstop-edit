@@ -24,7 +24,7 @@ def app(qtbot: QtBot, tree_root: Path) -> Iterator[DoorstopEdit]:
 def click_item_in_tree(qtbot: QtBot, ui: Ui_MainWindow, index: int) -> None:
     w_item = ui.item_tree_widget.topLevelItem(index)
     w_item_rect = ui.item_tree_widget.visualItemRect(w_item)
-    with qtbot.wait_signal(ui.item_tree_widget.itemSelectionChanged):  # type: ignore
+    with qtbot.wait_signal(ui.item_tree_widget.itemSelectionChanged):
         qtbot.mouseClick(
             ui.item_tree_widget.viewport(),
             Qt.MouseButton.LeftButton,
@@ -34,13 +34,13 @@ def click_item_in_tree(qtbot: QtBot, ui: Ui_MainWindow, index: int) -> None:
 
 
 def click_button_clear_search(qtbot: QtBot, ui: Ui_MainWindow) -> None:
-    with qtbot.wait_signal(ui.item_tree_search_input.textChanged):  # type: ignore
+    with qtbot.wait_signal(ui.item_tree_search_input.textChanged):
         qtbot.mouseClick(ui.item_tree_clear_search, Qt.MouseButton.LeftButton)
     assert ui.item_tree_search_input.text() == ""
 
 
 def type_in_search_box(qtbot: QtBot, ui: Ui_MainWindow, text: str) -> None:
-    with qtbot.wait_signal(ui.item_tree_search_input.textChanged):  # type: ignore
+    with qtbot.wait_signal(ui.item_tree_search_input.textChanged):
         qtbot.keyClicks(ui.item_tree_search_input, text)
 
 
@@ -95,7 +95,7 @@ def test_edit_item_then_save(qtbot: QtBot, app: DoorstopEdit) -> None:
     item_file_content = item_path.read_text("utf-8")
 
     with patch.object(doorstop.Item, "save", wraps=item.save) as item_save:
-        with qtbot.wait_signal(app.window.ui.item_edit_text_text_edit.textChanged):  # type: ignore
+        with qtbot.wait_signal(app.window.ui.item_edit_text_text_edit.textChanged):
             added_text = "Some more content"
             qtbot.keyClicks(app.window.ui.item_edit_text_text_edit, added_text)
 
@@ -110,7 +110,7 @@ def test_document_reorder(qtbot: QtBot, app: DoorstopEdit, monkeypatch: pytest.M
     monkeypatch.setattr(ConfirmDialog, "ask", classmethod(lambda *_: True))
 
     with patch.object(doorstop.Document, "reorder") as doc_reorder_mock:
-        with qtbot.wait_signal(app.window.ui.doc_reorder_level_tool_button.clicked):  # type: ignore
+        with qtbot.wait_signal(app.window.ui.doc_reorder_level_tool_button.clicked):
             qtbot.mouseClick(app.window.ui.doc_reorder_level_tool_button, Qt.MouseButton.LeftButton)
 
     assert doc_reorder_mock.call_count == 1
@@ -120,7 +120,7 @@ def test_document_review_all(qtbot: QtBot, app: DoorstopEdit, monkeypatch: pytes
     monkeypatch.setattr(ConfirmDialog, "ask", classmethod(lambda *_: True))
 
     with patch.object(doorstop.Item, "review") as item_review_mock:
-        with qtbot.wait_signal(app.window.ui.doc_review_tool_button.clicked):  # type: ignore
+        with qtbot.wait_signal(app.window.ui.doc_review_tool_button.clicked):
             qtbot.mouseClick(app.window.ui.doc_review_tool_button, Qt.MouseButton.LeftButton)
 
     assert item_review_mock.call_count == NUM_ITEMS_PER_DOC
@@ -130,7 +130,7 @@ def test_document_clear_all_suspect_links(qtbot: QtBot, app: DoorstopEdit, monke
     monkeypatch.setattr(ConfirmDialog, "ask", classmethod(lambda *_: True))
 
     with patch.object(doorstop.Item, "clear") as item_clear_mock:
-        with qtbot.wait_signal(app.window.ui.doc_clear_links_tool_button.clicked):  # type: ignore
+        with qtbot.wait_signal(app.window.ui.doc_clear_links_tool_button.clicked):
             qtbot.mouseClick(app.window.ui.doc_clear_links_tool_button, Qt.MouseButton.LeftButton)
 
     assert item_clear_mock.call_count == NUM_ITEMS_PER_DOC

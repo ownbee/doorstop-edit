@@ -20,8 +20,8 @@ class ItemPickerDialog:
         self._doorstop_data = doorstop_data
         self._on_selected = on_selected
 
-        self._dialog.ui.search.textChanged.connect(self._on_search_input_changed)  # type: ignore
-        self._dialog.ui.buttons.accepted.connect(self._on_accepted_button_pressed)  # type: ignore
+        self._dialog.ui.search.textChanged.connect(self._on_search_input_changed)
+        self._dialog.ui.buttons.accepted.connect(self._on_accepted_button_pressed)
         self._update_search_result([])
 
     def show(self) -> None:

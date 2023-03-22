@@ -33,7 +33,7 @@ class DoorstopEdit:
         self.window = _MainWindow()
         self.doorstop_data = DoorstopData(root)
 
-        self.window.ui.menu_action_exit.triggered.connect(QApplication.exit)  # type: ignore
+        self.window.ui.menu_action_exit.triggered.connect(QApplication.exit)
         self.window.ui.menu_action_show_document_tree.triggered[bool].connect(  # type: ignore
             lambda checked, dock=self.window.ui.item_tree_dock_widget: self._on_toggle_dock_widget(checked, dock)
         )
@@ -64,15 +64,11 @@ class DoorstopEdit:
         self.item_edit_view = ItemEditView(self.window.ui, self.doorstop_data)
         self.item_edit_view.on_item_changed = self._on_item_edit
         self.item_edit_view.on_open_viewer = self._popup_item_viewer
-        self.window.ui.tree_combo_box.currentIndexChanged.connect(self._on_selected_document_change)  # type: ignore
-        self.window.ui.view_items_section_mode.clicked.connect(self._on_section_mode_changed)  # type: ignore
-        self.window.ui.doc_review_tool_button.clicked.connect(self._on_doc_review_all_button_clicked)  # type: ignore
-        self.window.ui.doc_clear_links_tool_button.clicked.connect(  # type: ignore
-            self._on_doc_clear_all_links_button_clicked
-        )
-        self.window.ui.doc_reorder_level_tool_button.clicked.connect(  # type: ignore
-            self._on_doc_reoder_all_button_clicked
-        )
+        self.window.ui.tree_combo_box.currentIndexChanged.connect(self._on_selected_document_change)
+        self.window.ui.view_items_section_mode.clicked.connect(self._on_section_mode_changed)
+        self.window.ui.doc_review_tool_button.clicked.connect(self._on_doc_review_all_button_clicked)
+        self.window.ui.doc_clear_links_tool_button.clicked.connect(self._on_doc_clear_all_links_button_clicked)
+        self.window.ui.doc_reorder_level_tool_button.clicked.connect(self._on_doc_reoder_all_button_clicked)
 
         self.selected_document: Optional[doorstop.Document] = None
         # Adjust docks width to a sane default (designer seem to not support it).

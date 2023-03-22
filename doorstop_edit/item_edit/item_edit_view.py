@@ -191,17 +191,13 @@ class ItemEditView:
         self.item: Optional[doorstop.Item] = None
         self._disable_save = False
         self._loaded_extended_attributes: Dict[str, Tuple[QWidget, QWidget]] = {}
-        self.ui.edit_item_text_format_button.clicked.connect(self._on_text_format_button_pressed)  # type: ignore
-        self.ui.edit_item_wrap_text_button.clicked.connect(self._on_wrap_text_button_pressed)  # type: ignore
-        self.ui.item_edit_copy_uid_clipboard_button.clicked.connect(  # type: ignore
-            self._on_copy_uid_to_clipboard_button_pressed
-        )
-        self.ui.item_edit_diff_button.clicked.connect(self._on_diff_button_pressed)  # type: ignore
-        self.ui.item_edit_undo_button.clicked.connect(self._on_undo_button_pressed)  # type: ignore
-        self.ui.item_edit_review_button.clicked.connect(self._on_review_button_pressed)  # type: ignore
-        self.ui.item_edit_clear_suspects_button.clicked.connect(  # type: ignore
-            self._on_clear_suspect_links_button_pressed
-        )
+        self.ui.edit_item_text_format_button.clicked.connect(self._on_text_format_button_pressed)
+        self.ui.edit_item_wrap_text_button.clicked.connect(self._on_wrap_text_button_pressed)
+        self.ui.item_edit_copy_uid_clipboard_button.clicked.connect(self._on_copy_uid_to_clipboard_button_pressed)
+        self.ui.item_edit_diff_button.clicked.connect(self._on_diff_button_pressed)
+        self.ui.item_edit_undo_button.clicked.connect(self._on_undo_button_pressed)
+        self.ui.item_edit_review_button.clicked.connect(self._on_review_button_pressed)
+        self.ui.item_edit_clear_suspects_button.clicked.connect(self._on_clear_suspect_links_button_pressed)
 
         self.spell_checkers = []
         self.spell_checkers.append(TextEditSpellChecker(self.ui.item_edit_text_text_edit.document()))
@@ -261,7 +257,7 @@ class ItemEditView:
         self.fields.append(self.links_field)
 
         self.ui.item_edit_link_list.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.ui.item_edit_link_list.customContextMenuRequested.connect(self._prepare_links_context_menu)  # type: ignore
+        self.ui.item_edit_link_list.customContextMenuRequested.connect(self._prepare_links_context_menu)
         self.ui.item_edit_link_list.setItemDelegate(CustomColorItemDelegate(self.ui.item_edit_link_list))
         # Set validators
         for field in self.fields:
@@ -286,13 +282,13 @@ class ItemEditView:
 
     def _connect_field(self, field: Field) -> None:
         if isinstance(field.widget, QLineEdit):
-            field.widget.textChanged.connect(lambda x, field=field: self._on_field_updated(field, x))  # type: ignore
+            field.widget.textChanged.connect(lambda x, field=field: self._on_field_updated(field, x))
         elif isinstance(field.widget, QPlainTextEdit):
-            field.widget.textChanged.connect(  # type: ignore
+            field.widget.textChanged.connect(
                 lambda field=field: self._on_field_updated(field, field.widget.toPlainText())
             )
         elif isinstance(field.widget, QCheckBox):
-            field.widget.stateChanged.connect(lambda x, field=field: self._on_field_updated(field, x))  # type: ignore
+            field.widget.stateChanged.connect(lambda x, field=field: self._on_field_updated(field, x))
         elif isinstance(field.widget, QListWidget):
             pass  # Special handling...
         else:
@@ -497,20 +493,18 @@ class ItemEditView:
         actions = []
 
         add_action = QAction(QIcon(":/icons/add-link"), "Add", self.ui.item_edit_link_list)
-        add_action.triggered.connect(self._open_links_picker)  # type: ignore
+        add_action.triggered.connect(self._open_links_picker)
         actions.append(add_action)
 
         if w_item is not None:
             item_uid = w_item.data(Qt.ItemDataRole.UserRole)
 
             remove_action = QAction(QIcon(":/icons/remove-link"), "Remove", self.ui.item_edit_link_list)
-            remove_action.triggered.connect(self._remove_selected_links_from_widget)  # type: ignore
+            remove_action.triggered.connect(self._remove_selected_links_from_widget)
             actions.append(remove_action)
 
             view_action = QAction(QIcon(":/icons/view-item"), "Popup", self.ui.item_edit_link_list)
-            view_action.triggered.connect(  # type: ignore
-                lambda checked=False, item_uid=item_uid: self.on_open_viewer(item_uid)
-            )
+            view_action.triggered.connect(lambda checked=False, item_uid=item_uid: self.on_open_viewer(item_uid))
             actions.append(view_action)
 
         menu = QMenu(self.ui.item_edit_link_list)

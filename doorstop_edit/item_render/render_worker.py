@@ -51,7 +51,7 @@ class RenderWorker(QObject):
         # Thread that will run until we destroy it.
         self.workerThread: Optional[QThread] = QThread()
         self.moveToThread(self.workerThread)  # Move this object into the thread. All slots will run on the thread.
-        self.workerThread.finished.connect(self.workerThread.deleteLater)  # type: ignore
+        self.workerThread.finished.connect(self.workerThread.deleteLater)
         self.workerThread.start()
 
         self.markdown_instance: Optional[markdown.Markdown] = None

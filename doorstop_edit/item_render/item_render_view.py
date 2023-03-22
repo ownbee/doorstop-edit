@@ -43,7 +43,7 @@ class ItemRenderView(QObject):
         self.web_view = web_view
         self.doorstop_data = doorstop_data
 
-        self.web_view.loadFinished.connect(self._on_load_finished)  # type: ignore
+        self.web_view.loadFinished.connect(self._on_load_finished)
 
         page = RedirectOverridePage(web_view, self._on_navigration_request)
         web_view.setPage(page)

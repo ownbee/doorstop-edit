@@ -33,11 +33,11 @@ class ItemTreeView:
         self._tree_widget.setColumnCount(2)
         self._tree_widget.setHeaderLabels(["Level", "Header"])
         self._tree_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self._tree_widget.itemSelectionChanged.connect(self._on_item_selection_changed)  # type: ignore
-        self._tree_widget.customContextMenuRequested.connect(self._prepare_context_menu)  # type: ignore
+        self._tree_widget.itemSelectionChanged.connect(self._on_item_selection_changed)
+        self._tree_widget.customContextMenuRequested.connect(self._prepare_context_menu)
         self._tree_widget.setItemDelegate(CustomColorItemDelegate(self._tree_widget, paint_border=False))
         self._item_tree_search_input = item_tree_search_input
-        self._item_tree_search_input.textChanged.connect(self._on_search_input_changed)  # type: ignore
+        self._item_tree_search_input.textChanged.connect(self._on_search_input_changed)
         self._doorstop_data = doorstop_data
 
         self._selected_document_name: Optional[str] = None
@@ -219,7 +219,7 @@ class ItemTreeView:
             "Hide Inactive" if self._filter_show_inactive else "Show Inactive",
             self._tree_widget,
         )
-        show_inactive_action.triggered.connect(self._on_show_inactive_items)  # type: ignore
+        show_inactive_action.triggered.connect(self._on_show_inactive_items)
         show_inactive_action.setCheckable(True)
         show_inactive_action.setChecked(self._filter_show_inactive)
 
@@ -228,7 +228,7 @@ class ItemTreeView:
             "Reload Tree",
             self._tree_widget,
         )
-        reload_action.triggered.connect(self._update)  # type: ignore
+        reload_action.triggered.connect(self._update)
 
         item_uid: Optional[str] = None
         item_actions: List[QAction] = []
@@ -237,20 +237,16 @@ class ItemTreeView:
 
             delete_action = QAction(QIcon(":/icons/trash-can"), "Delete Item", self._tree_widget)
             delete_action.setCheckable(False)
-            delete_action.triggered.connect(  # type: ignore
+            delete_action.triggered.connect(
                 lambda checked=False, item_uid=item_uid: self._on_delete_item_button_clicked(item_uid)
             )
 
             pin_action = QAction(QIcon(":/icons/pin"), "Pin", self._tree_widget)
             pin_action.setCheckable(False)
-            pin_action.triggered.connect(  # type: ignore
-                lambda checked=False, item_uid=item_uid: self.on_pinned_item(item_uid)
-            )
+            pin_action.triggered.connect(lambda checked=False, item_uid=item_uid: self.on_pinned_item(item_uid))
 
             view_action = QAction(QIcon(":/icons/view-item"), "Popup", self._tree_widget)
-            view_action.triggered.connect(  # type: ignore
-                lambda checked=False, item_uid=item_uid: self.on_open_viewer(item_uid)
-            )
+            view_action.triggered.connect(lambda checked=False, item_uid=item_uid: self.on_open_viewer(item_uid))
 
             item_actions.append(delete_action)
             item_actions.append(pin_action)

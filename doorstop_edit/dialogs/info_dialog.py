@@ -38,6 +38,6 @@ class InfoDialog:
             extra_button.setText(extra_button_name)
             extra_button.setIcon(QIcon(extra_button_icon))
             if extra_button_cb is not None:
-                extra_button.clicked.connect(extra_button_cb)  # type: ignore
+                extra_button.clicked.connect(extra_button_cb)
 
         dialog.exec()

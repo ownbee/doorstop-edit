@@ -47,10 +47,10 @@ class DiffDialog:
         }
 
         for m, button in self._mode_buttons.items():
-            button.clicked.connect(functools.partial(self._on_mode_button_clicked, mode_ctrl=m))  # type: ignore
+            button.clicked.connect(functools.partial(self._on_mode_button_clicked, mode_ctrl=m))
 
-        self.dialog.ui.vcs_backward_button.clicked.connect(self._on_backward_clicked)  # type: ignore
-        self.dialog.ui.vcs_forward_button.clicked.connect(self._on_forward_clicked)  # type: ignore
+        self.dialog.ui.vcs_backward_button.clicked.connect(self._on_backward_clicked)
+        self.dialog.ui.vcs_forward_button.clicked.connect(self._on_forward_clicked)
 
         self._on_mode_button_clicked(DiffDialog._current_mode)
         self._update_current_mode(DiffDialog._current_mode, force=True)
