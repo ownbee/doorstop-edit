@@ -180,22 +180,24 @@ def generate_tree(root: Path, num_docs: int, num_req: int) -> None:
                     link_id = f"{prev_doc_prefix}-{(i_idx + i) % num_req:03}"
                     links += f"- {link_id}:\n"
             seed = d_idx + i_idx
-            (doc_root / f"{doc_prefix}-{item_id:03}.yml").write_text(
-                ITEM_TEMPLATE.format(
-                    active=((i_idx + 3) % 20 > 0),
-                    header=gen_paragraph(word_list, seed, 2 + (i_idx % 4)),
-                    links="\n" + links if links != "" else "[]",
-                    normative=(i_idx % 10 > 0),
-                    text1="  " + gen_paragraph(word_list, seed + 1, 10 + (i_idx % 10)),
-                    text2=(MD_LIST if i_idx % 2 == 0 else ""),
-                    text3=(MD_TABLE if i_idx % 4 == 0 else ""),
-                    text4=(MD_PLANY_UML if (i_idx + 1) % 10 == 0 else ""),
-                    text5=(MD_IMAGE.format(path=out_image_rel) if (i_idx + 2) % 4 == 0 else ""),
-                    level=level,
-                    custom1=gen_paragraph(word_list, seed + 2, 1 + (i_idx % 10)),
-                    custom2=i_idx % 2 == 0,
+
+            with open(doc_root / f"{doc_prefix}-{item_id:03}.yml", "w") as fd:
+                fd.write(
+                    ITEM_TEMPLATE.format(
+                        active=((i_idx + 3) % 20 > 0),
+                        header=gen_paragraph(word_list, seed, 2 + (i_idx % 4)),
+                        links="\n" + links if links != "" else "[]",
+                        normative=(i_idx % 10 > 0),
+                        text1="  " + gen_paragraph(word_list, seed + 1, 10 + (i_idx % 10)),
+                        text2=(MD_LIST if i_idx % 2 == 0 else ""),
+                        text3=(MD_TABLE if i_idx % 4 == 0 else ""),
+                        text4=(MD_PLANY_UML if (i_idx + 1) % 10 == 0 else ""),
+                        text5=(MD_IMAGE.format(path=out_image_rel) if (i_idx + 2) % 4 == 0 else ""),
+                        level=level,
+                        custom1=gen_paragraph(word_list, seed + 2, 1 + (i_idx % 10)),
+                        custom2=i_idx % 2 == 0,
+                    )
                 )
-            )
 
         prev_doc_prefix = doc_prefix
 

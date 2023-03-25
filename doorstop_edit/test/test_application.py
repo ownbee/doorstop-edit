@@ -17,7 +17,7 @@ from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
 def app(qtbot: QtBot, tree_root: Path) -> Iterator[DoorstopEdit]:
     app = DoorstopEdit(tree_root)
     qtbot.add_widget(app.window, before_close_func=lambda x, app=app: app.quit())
-    app.show()  # Must show it, clicks wont work otherwise.
+    app.start()  # Must show it, clicks wont work otherwise.
     yield app
 
 

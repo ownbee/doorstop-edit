@@ -16,8 +16,16 @@ class FileWatcher(FileSystemEventHandler):
     def __init__(self, on_dir_changed: Callable[[bool, str], None]) -> None:
         self.on_dir_changed = on_dir_changed
         self.observer = Observer()
-        self.observer.start()
+        # self.observer.start()
         self.scheduled_docs: List[Document] = []
+
+    def start(self) -> None:
+        self.observer.start()
+
+    def stop(self) -> None:
+        if self.observer.is_alive():
+            self.observer.stop()
+            self.observer.join(timeout=5)
 
     def pause(self) -> None:
         self.observer.unschedule_all()

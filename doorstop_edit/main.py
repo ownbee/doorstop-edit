@@ -116,7 +116,7 @@ def main() -> int:
     editor = setup(app, sys.argv)
     app.aboutToQuit.connect(editor.quit)  # type: ignore
     if editor is not None:
-        editor.show()
+        editor.start()
         splash.finish(editor.window)
         return app.exec()
 

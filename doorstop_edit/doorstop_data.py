@@ -28,6 +28,12 @@ class DoorstopData(QObject):
         self.original_item_data: Dict[str, str] = {}
         self.file_watcher = FileWatcher(self._on_filewatch_callback)
 
+    def start(self) -> None:
+        self.file_watcher.start()
+
+    def stop(self) -> None:
+        self.file_watcher.stop()
+
     def _on_filewatch_callback(self, modified_only: bool, filename: str) -> None:
         do_rebuild = False
         if modified_only:

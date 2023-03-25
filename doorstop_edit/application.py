@@ -84,7 +84,8 @@ class DoorstopEdit:
         # Called last since it will trigger view updates.
         self.doorstop_data.rebuild(False)
 
-    def show(self) -> None:
+    def start(self) -> None:
+        self.doorstop_data.start()
         self.window.show()
 
         if len(self.doorstop_data.get_documents()) == 0:
@@ -94,6 +95,7 @@ class DoorstopEdit:
     def quit(self) -> None:
         """Tear down resources that needs to be teared down before exit."""
         logger.debug("Quitting...")
+        self.doorstop_data.stop()
         self.item_render_view.destroy()
         self.window.close()
 
