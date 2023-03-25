@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import doorstop
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QApplication, QDialog, QDockWidget, QMainWindow
 
@@ -31,7 +31,8 @@ class _MainWindow(QMainWindow):
 class DoorstopEdit:
     def __init__(self, root: Path) -> None:
         self.window = _MainWindow()
-        self.doorstop_data = DoorstopData(root)
+        self.doorstop_data = DoorstopData(self.window, root)
+        self.doorstop_data.tree_changed.connect(self._on_tree_changed)
 
         self.window.ui.menu_action_exit.triggered.connect(QApplication.exit)
         self.window.ui.menu_action_show_document_tree.triggered[bool].connect(  # type: ignore
@@ -78,8 +79,10 @@ class DoorstopEdit:
             Qt.Orientation.Horizontal,
         )
 
-        self._update_document_list()
         self.item_render_view.show(None)  # Set empty but with correct colors (css).
+
+        # Called last since it will trigger view updates.
+        self.doorstop_data.rebuild(False)
 
     def show(self) -> None:
         self.window.show()
@@ -286,3 +289,11 @@ WARNING: This operation cannot be undone!
 
         self.tree_view.update(self.selected_document.prefix)
         self.item_edit_view.update_item(None)
+
+    @Slot(bool)
+    def _on_tree_changed(self, modified_only: bool) -> None:
+        if not modified_only:
+            self._update_document_list()
+        if self.selected_document:
+            self._update_item_tree(self.selected_document)
+        self.item_edit_view.reload()

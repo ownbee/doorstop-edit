@@ -271,6 +271,11 @@ class ItemEditView:
 
         self._update_view()
 
+    def reload(self) -> None:
+        if self.item is not None and not self._doorstop_data.find_item(self.item.uid.value):
+            self.item = None
+        self.update_item(self.item)
+
     @time_function("Updating item in edit view")
     def update_item(self, item: Optional[doorstop.Item]) -> None:
         self.item = item

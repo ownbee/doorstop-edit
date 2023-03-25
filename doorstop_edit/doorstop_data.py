@@ -2,11 +2,13 @@ from pathlib import Path
 from typing import Dict, Generator, Iterable, Optional, Union
 
 import doorstop
+from PySide6.QtCore import QObject, Signal, Slot
 
 from doorstop_edit.utils.debug_timer import time_function
+from doorstop_edit.utils.file_watcher import FileWatcher
 
 
-class DoorstopData:
+class DoorstopData(QObject):
     """Container holding all doorstop data (tree) for the whole application.
 
     It has accessors for easily getting and finding the data in a preferred form.
@@ -17,16 +19,43 @@ class DoorstopData:
     cached longterm since it can lead to saving old data, for example.
     """
 
-    def __init__(self, root: Path) -> None:
-        self._root = root
-        self._tree: doorstop.Tree
-        self.rebuild()
-        self.original_item_data: Dict[str, str] = {}
+    tree_changed = Signal((bool))  # Called when tree changed on disk
 
+    def __init__(self, parent: Optional[QObject], root: Path) -> None:
+        super().__init__(parent=parent)
+        self._root = root
+        self._tree: Optional[doorstop.Tree] = None
+        self.original_item_data: Dict[str, str] = {}
+        self.file_watcher = FileWatcher(self._on_filewatch_callback)
+
+    def _on_filewatch_callback(self, modified_only: bool, filename: str) -> None:
+        do_rebuild = False
+        if modified_only:
+            item = self.find_item(Path(filename).stem)
+            if item is None:
+                do_rebuild = True
+            else:
+                item.load(reload=True)
+                self.tree_changed.emit(True)
+
+        if ".doorstop" in filename:
+            do_rebuild = True
+
+        if not modified_only or do_rebuild:
+            self.rebuild(only_reload=modified_only)
+
+    @Slot(bool)
     @time_function("Rebuilding document tree")
-    def rebuild(self) -> None:
-        self._tree = doorstop.build(cwd=str(self._root), root=str(self._root))
-        self._tree.load()  # No lazy load to avoid lag spikes when user starts clicking around.
+    def rebuild(self, only_reload: bool) -> None:
+        if self._tree is None or not only_reload:
+            self.file_watcher.pause()  # Dont trigger any events while rebuilding
+            self._tree = doorstop.build(cwd=str(self._root), root=str(self._root))
+
+        # Always load after build (no lazy) load to avoid lag spikes when user starts clicking around.
+        self._tree.load(reload=True)
+
+        self.file_watcher.watch(list(self.get_documents().values()))
+        self.tree_changed.emit(only_reload)
 
     def get_documents(self) -> Dict[str, doorstop.Document]:
         """Get all documents in doorstop tree.
@@ -34,7 +63,7 @@ class DoorstopData:
         Return: A dict of {document_name: Document}
         """
         retval = {}
-        for doc in self._tree:
+        for doc in self._tree or []:
             retval[doc.prefix] = doc
         return retval
 
@@ -65,7 +94,7 @@ class DoorstopData:
     def iter_items(self, document: Optional[doorstop.Document] = None) -> Generator[doorstop.Item, None, None]:
         tree: Iterable[doorstop.Document]
         if document is None:
-            tree = self._tree
+            tree = self._tree or []
         else:
             tree = [document]
         doc: doorstop.Document
@@ -79,6 +108,8 @@ class DoorstopData:
         This application must always call this instead of directly calling Item.save() to be able to
         restore the item later.
         """
+        self.file_watcher.pause()  # To not trigger file changes on editor changes.
+
         p = Path(item.path)
         if str(item.uid) not in self.original_item_data and p.is_file():
             self.original_item_data[str(item.uid)] = p.read_text("utf-8")
@@ -90,6 +121,8 @@ class DoorstopData:
         if self.original_item_data.get(str(item.uid), "") == Path(item.path).read_text("utf-8"):
             # If no change, delete from database.
             del self.original_item_data[str(item.uid)]
+
+        self.file_watcher.resume()
 
     def get_original_data(self, item: doorstop.Item) -> Optional[str]:
         """None means no change."""

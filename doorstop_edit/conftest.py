@@ -23,4 +23,4 @@ def tree_root() -> Iterator[Path]:
 
 @pytest.fixture()
 def doorstop_data(tree_root: Path) -> DoorstopData:
-    return DoorstopData(tree_root)
+    return DoorstopData(None, tree_root)

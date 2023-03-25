@@ -38,6 +38,7 @@ mdformat-myst = "^0.1.5"
 pygments = "^2.14.0"
 setuptools = "^65.0.0"
 pyspellchecker = "^0.7.1"
+watchdog = "^3.0.0"
 
 [tool.poetry.group.dev.dependencies]
 

@@ -7,8 +7,8 @@
 _A cross-platform GUI editor for [Doorstop](https://github.com/doorstop-dev/doorstop) powered by PySide6 (Qt)._
 
 The goal of this GUI is to provide all the tools needed to efficiently work with a larger set of
-requirements within the editor and at the same time have full control of what is happening. The
-editor use the doorstop API whenever possible to behave the same way as doorstop.
+requirements within the editor. The editor use the doorstop API whenever possible to behave the same
+way as doorstop.
 
 ![Sample](https://raw.githubusercontent.com/ownbee/doorstop-edit/main/sample.png)
 
@@ -32,7 +32,6 @@ editor use the doorstop API whenever possible to behave the same way as doorstop
 * Add and remove document.
 * Remembering changed layout between restarts.
 * Validating documents and items in a user-friendly manner.
-* File watcher for syncing/refreshing when changes made on disk.
 * Ability to change project root.
 
 ## Install
@@ -61,9 +60,6 @@ python3 tools/gen_sample_tree.py
 
 There exists at least two well known GUI's for doorstop editing,
 [doorhole](https://github.com/sevendays/doorhole) and the build-in GUI in doorstop.
-
-Since both are pretty basic and have missing features when working with a large and complex set of
-requrements, this new GUI was created to fill in some gaps.
 
 
 ## Contributing
