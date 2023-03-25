@@ -120,6 +120,7 @@ class RenderWorker(QObject):
 
         md = self._get_markdown(item.document.path)
         try:
+            md.reset()
             return md.convert(markdown_content)
         except Exception as e:
             msg = "Failed to render HTML from markdown."
