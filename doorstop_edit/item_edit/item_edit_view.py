@@ -551,7 +551,7 @@ class ItemEditView:
         cursor.insertText(new_text)
         cursor.endEditBlock()
         widget.setFocus()
-        cursor.setPosition(pos)
+        cursor.setPosition(min(pos, len(new_text) - 1))
         widget.setTextCursor(cursor)  # Set back the copied cursor for position update.
 
     def _on_copy_uid_to_clipboard_button_pressed(self) -> None:
