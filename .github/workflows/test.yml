@@ -82,11 +82,11 @@ jobs:
 
       - name: Run tests (Ubuntu)
         if: ${{ matrix.os == 'Ubuntu' }}
-        run: xvfb-run poetry run pytest -- -ra -s --color=yes --cov=doorstop_edit --cov-report=xml
+        run: xvfb-run poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
 
       - name: Run tests (other)
         if: ${{ matrix.os != 'Ubuntu' }}
-        run: poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
+        run: poetry run pytest -- -ra -s --color=yes --cov=doorstop_edit --cov-report=xml
 
       - uses: codecov/codecov-action@v3
         if: ${{ matrix.os == 'Ubuntu' && matrix.python-version == '3.10' && github.repository == 'ownbee/doorstop-edit' }}
