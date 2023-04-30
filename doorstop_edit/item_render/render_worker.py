@@ -4,7 +4,7 @@ import tempfile
 import time
 from pathlib import Path
 from queue import Empty
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import doorstop
 from PySide6.QtCore import (
@@ -69,7 +69,7 @@ def process(q: mp.Queue, root: str, items: List[doorstop.Item]) -> None:
         logger.error("Failed to process markdown:", e)
 
 
-def _render_item(md: FragmentedMarkdown, item: doorstop.Item, attrs: List[Tuple[str, str | Element]]) -> str:
+def _render_item(md: FragmentedMarkdown, item: doorstop.Item, attrs: List[Tuple[str, Union[str, Element]]]) -> str:
     if str(item.level).endswith(".0") and not item.normative:
         levels = str(item.level).count(".")
         header_tag = f"h{levels}"
@@ -96,8 +96,8 @@ def _render_item(md: FragmentedMarkdown, item: doorstop.Item, attrs: List[Tuple[
     return html
 
 
-def _prepare(md: FragmentedMarkdown, item: doorstop.Item) -> List[Tuple[str, str | Element]]:
-    rows: List[Tuple[str, str | Element]] = []
+def _prepare(md: FragmentedMarkdown, item: doorstop.Item) -> List[Tuple[str, Union[str, Element]]]:
+    rows: List[Tuple[str, Union[str, Element]]] = []
     rows.append(("text", md.add_fragement(item.text) or ""))
     if item.document and item.document.publish:
         for attr in item.document.publish:
