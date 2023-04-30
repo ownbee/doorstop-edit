@@ -27,6 +27,7 @@ jobs:
       fail-fast: false
     env:
       DISPLAY: :99.0
+      QT_DEBUG_PLUGINS: "1"
     defaults:
       run:
         shell: bash
