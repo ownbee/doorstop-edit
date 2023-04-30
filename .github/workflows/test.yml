@@ -82,7 +82,7 @@ jobs:
 
       - name: Run tests (Ubuntu)
         if: ${{ matrix.os == 'Ubuntu' }}
-        run: xvfb-run poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
+        run: xvfb-run poetry run pytest -- -ra -s --color=yes --cov=doorstop_edit --cov-report=xml
 
       - name: Run tests (other)
         if: ${{ matrix.os != 'Ubuntu' }}
