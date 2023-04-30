@@ -48,6 +48,8 @@ class DoorstopEdit:
             lambda checked=False: self._on_about_clicked()
         )
         self.item_render_view = ItemRenderView(self.window.ui.web_engine_view, self.doorstop_data)
+        self.item_render_view.on_open_viewer = self._popup_item_viewer
+        self.item_render_view.render_progress.connect(self._update_render_progress)
 
         self.tree_view = ItemTreeView(
             self.window.ui.item_tree_widget,
@@ -66,7 +68,7 @@ class DoorstopEdit:
         self.item_edit_view.on_item_changed = self._on_item_edit
         self.item_edit_view.on_open_viewer = self._popup_item_viewer
         self.window.ui.tree_combo_box.currentIndexChanged.connect(self._on_selected_document_change)
-        self.window.ui.view_items_section_mode.clicked.connect(self._on_section_mode_changed)
+        self.window.ui.view_items_mode.currentTextChanged.connect(self._on_view_mode_changed)
         self.window.ui.doc_review_tool_button.clicked.connect(self._on_doc_review_all_button_clicked)
         self.window.ui.doc_clear_links_tool_button.clicked.connect(self._on_doc_clear_all_links_button_clicked)
         self.window.ui.doc_reorder_level_tool_button.clicked.connect(self._on_doc_reoder_all_button_clicked)
@@ -153,8 +155,13 @@ class DoorstopEdit:
 
         self._update_used_document(doc)
 
-    def _on_section_mode_changed(self, is_active: bool) -> None:
-        self.item_render_view.set_section_mode(is_active)
+    def _on_view_mode_changed(self, new_mode: str) -> None:
+        if new_mode == "Document":
+            self.item_render_view.set_view_mode(ItemRenderView.ViewMode.Document)
+        elif new_mode == "Section":
+            self.item_render_view.set_view_mode(ItemRenderView.ViewMode.Section)
+        elif new_mode == "Item":
+            self.item_render_view.set_view_mode(ItemRenderView.ViewMode.Item)
 
     def _on_item_edit(self, item: doorstop.Item) -> None:
         self.item_render_view.show(item)
@@ -224,6 +231,7 @@ class DoorstopEdit:
         w = QDialog(self.window, Qt.WindowType.Window)
         ui.setupUi(w)
         irv = ItemRenderView(ui.web_engine_view, self.doorstop_data)
+        irv.on_open_viewer = self._popup_item_viewer
         irv.show(item)
         w.show()
         w.setWindowTitle(f"[{item.uid}] {item.header}")
@@ -299,3 +307,8 @@ WARNING: This operation cannot be undone!
         if self.selected_document:
             self._update_item_tree(self.selected_document)
         self.item_edit_view.reload()
+
+    @Slot(int)
+    def _update_render_progress(self, percentage: int) -> None:
+        self.window.ui.render_progress_bar.setMaximum(100)
+        self.window.ui.render_progress_bar.setValue(percentage)

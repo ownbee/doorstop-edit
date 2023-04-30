@@ -83,7 +83,7 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
         return None
 
     logging.basicConfig(
-        level=logging.WARNING,
+        level=logging.ERROR,  # Mostly to avoid doorstop spamming irrelevant warnings and info.
         format="%(asctime)s [%(name)s] %(message)s",
         datefmt="%H:%M:%S",
     )

@@ -1,4 +1,5 @@
 import logging
+import threading
 import time
 from typing import Any, Callable
 
@@ -13,7 +14,7 @@ def time_function(msg: str) -> Callable:
             start_time = time.time()
             retval = func(*args, **kwargs)
             duration = time.time() - start_time
-            logger.debug("%s took %.3f s", msg, duration)
+            logger.debug("%s took %.3f s, thread: %s", msg, duration, threading.get_native_id())
             return retval
 
         return decorated

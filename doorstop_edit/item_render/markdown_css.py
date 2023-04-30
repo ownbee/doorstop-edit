@@ -12,6 +12,7 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 MARKDOWN_CSS = """
 .markdown-body {
   color-scheme: dark;
@@ -21,7 +22,7 @@ MARKDOWN_CSS = """
   color: #c9d1d9;
   background-color: #202124;
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1.5;
   word-wrap: break-word;
   margin: 20px;
@@ -267,8 +268,8 @@ MARKDOWN_CSS = """
 .markdown-body h4,
 .markdown-body h5,
 .markdown-body h6 {
-  margin-top: 24px;
-  margin-bottom: 16px;
+  margin-top: 16px;
+  margin-bottom: 5px;
   font-weight: 600;
   line-height: 1.25;
 }
@@ -555,7 +556,7 @@ MARKDOWN_CSS = """
 .markdown-body pre,
 .markdown-body details {
   margin-top: 0;
-  margin-bottom: 16px;
+  margin-bottom: 5px;
 }
 
 .markdown-body blockquote>:first-child {
@@ -831,7 +832,7 @@ MARKDOWN_CSS = """
 }
 
 .markdown-body .highlight {
-  margin-bottom: 16px;
+  margin-bottom: 5px;
 }
 
 .markdown-body .highlight pre {
@@ -956,4 +957,28 @@ MARKDOWN_CSS = """
   filter: invert(50%);
 }
 
+.selected {
+  border-left: 4px solid;
+  padding-left: 10px;
+  background-color: #211c00
+}
+
+table.req-table {
+  width: 100%;
+  display: table;
+  table-layout: auto;
+}
+
+table tr th.req-table {
+  width: 100px;
+}
+
+table tr.req-table {
+  background-color: #232629;
+  border-top: 1px solid #292a2b;
+}
+
+table tr.req-table:nth-child(2n) {
+  background-color: #232629;
+}
 """

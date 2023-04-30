@@ -98,8 +98,9 @@ def test_edit_item_then_save(qtbot: QtBot, app: DoorstopEdit) -> None:
         with qtbot.wait_signal(app.window.ui.item_edit_text_text_edit.textChanged):
             added_text = "Some more content"
             qtbot.keyClicks(app.window.ui.item_edit_text_text_edit, added_text)
-
-    assert item_save.call_count == len(added_text)
+            assert item_save.call_count == 0
+            qtbot.wait(1000)  # Should save after a period no typing.
+            assert item_save.call_count == 1
 
     new_content = item_path.read_text("utf-8")
     assert item_file_content != new_content

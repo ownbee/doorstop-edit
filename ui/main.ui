@@ -40,24 +40,58 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QToolButton" name="view_items_section_mode">
-           <property name="text">
-            <string>M</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/icons/view-sequential</normaloff>:/icons/view-sequential</iconset>
-           </property>
-           <property name="iconSize">
+          <widget class="QComboBox" name="view_items_mode">
+           <property name="minimumSize">
             <size>
-             <width>64</width>
-             <height>32</height>
+             <width>200</width>
+             <height>0</height>
             </size>
            </property>
-           <property name="checkable">
-            <bool>true</bool>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;View mode.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Document:&lt;/span&gt; View whole document.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Section:&lt;/span&gt; View section only (does not include children).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Item:&lt;/span&gt; Only view item.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
-           <property name="checked">
+           <item>
+            <property name="text">
+             <string>Document</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Section</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Item</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QProgressBar" name="render_progress_bar">
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>5</height>
+            </size>
+           </property>
+           <property name="value">
+            <number>24</number>
+           </property>
+           <property name="textVisible">
             <bool>false</bool>
            </property>
           </widget>
@@ -157,6 +191,18 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>276</width>
+     <height>138</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>1200</width>
+     <height>524287</height>
+    </size>
+   </property>
    <property name="baseSize">
     <size>
      <width>0</width>
@@ -178,7 +224,7 @@
    <widget class="QWidget" name="dockWidgetContents_3">
     <property name="maximumSize">
      <size>
-      <width>800</width>
+      <width>1200</width>
       <height>16777215</height>
      </size>
     </property>
@@ -373,7 +419,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>333</width>
+          <width>529</width>
           <height>836</height>
          </rect>
         </property>
@@ -456,48 +502,85 @@
                <number>6</number>
               </property>
               <property name="verticalSpacing">
-               <number>8</number>
+               <number>2</number>
               </property>
-              <item row="1" column="0">
-               <widget class="QLabel" name="activeLabel">
+              <item row="0" column="1">
+               <widget class="QLabel" name="item_edit_review_status_label">
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determines if the item is active (true) or not (false). Only active items are included when the corresponding document is published. Inactive items are excluded from validation.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Not part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>Current fingerprint status of item.</string>
                 </property>
                 <property name="text">
-                 <string>Active</string>
+                 <string>NOT REVIWED</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QCheckBox" name="item_edit_active_check_box"/>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="normativeLabel">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If normative (how to comply) or informative (help with conceptual understanding).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Not part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Normative</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QCheckBox" name="item_edit_normative_check_box"/>
+               <layout class="QHBoxLayout" name="horizontalLayout_9">
+                <item>
+                 <widget class="QCheckBox" name="item_edit_active_check_box">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determines if the item is active or not. &lt;/p&gt;&lt;p&gt;Only active items are included when the corresponding document is published. Inactive items are excluded from validation.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Not part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Active</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_6">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Fixed</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="item_edit_normative_check_box">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If normative (how to comply) or informative (help with conceptual understanding).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Not part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Normative</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_7">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Fixed</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="item_edit_derived_check_box">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicates if the item is derived or not.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Not part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Derived</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
               <item row="5" column="0">
-               <widget class="QLabel" name="derivedLabel">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicates if the item is derived (true) or not (false).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Not part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Derived</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QCheckBox" name="item_edit_derived_check_box"/>
-              </item>
-              <item row="6" column="0">
                <widget class="QLabel" name="levelLabel">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicates the presentation order within a document. A level of 1.1 will display above level 1.2 and 1.1.5 displays below 1.1.2.&lt;/p&gt;&lt;p&gt;If the level ends with .0 and the item is non-normative, Doorstop will treat the item as a document heading.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Not part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -507,7 +590,7 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="1">
+              <item row="5" column="1">
                <widget class="QLineEdit" name="item_edit_level_line_edit">
                 <property name="minimumSize">
                  <size>
@@ -523,7 +606,7 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="0">
+              <item row="6" column="0">
                <widget class="QLabel" name="label">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gives a header (i.e. title) for the item. It will be printed alongside the item UID when published as HTML and Markdown. Links will also include the header text.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Not part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -533,7 +616,7 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="1">
+              <item row="6" column="1">
                <widget class="QLineEdit" name="item_edit_header_line_edit">
                 <property name="minimumSize">
                  <size>
@@ -549,7 +632,7 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="0">
+              <item row="7" column="0">
                <widget class="QLabel" name="label_2">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Item text. This is the main body of the item. Doorstop treats the value as markdown to support rich text, images and tables.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -559,7 +642,7 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="1">
+              <item row="7" column="1">
                <widget class="QWidget" name="widget_3" native="true">
                 <layout class="QVBoxLayout" name="verticalLayout_7">
                  <property name="spacing">
@@ -667,7 +750,7 @@ Blah blah blah</string>
                 </layout>
                </widget>
               </item>
-              <item row="9" column="0">
+              <item row="8" column="0">
                <widget class="QLabel" name="label_3">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of links to parent item(s). A link indicates a relationship between two items in the document tree.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Part of fingerprint.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -677,7 +760,7 @@ Blah blah blah</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="1">
+              <item row="8" column="1">
                <widget class="QListWidget" name="item_edit_link_list">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -741,7 +824,7 @@ Blah blah blah</string>
                 </item>
                </widget>
               </item>
-              <item row="12" column="0" colspan="2">
+              <item row="11" column="0" colspan="2">
                <widget class="Line" name="line">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -754,23 +837,6 @@ Blah blah blah</string>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>Reviewed</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="item_edit_review_status_label">
-                <property name="toolTip">
-                 <string>Current fingerprint status of item.</string>
-                </property>
-                <property name="text">
-                 <string>NOT REVIWED</string>
                 </property>
                </widget>
               </item>
@@ -837,7 +903,7 @@ Blah blah blah</string>
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="toolButton">
+              <widget class="QToolButton" name="edit_document_button">
                <property name="text">
                 <string>A</string>
                </property>

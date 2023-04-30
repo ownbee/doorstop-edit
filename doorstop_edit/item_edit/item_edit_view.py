@@ -8,7 +8,7 @@ import mdformat
 from doorstop.core.types import UID as DOORSTOP_UID
 from doorstop.core.types import Level as doorstop_Level
 from doorstop.core.types import Text as doorstop_Text
-from PySide6.QtCore import QPoint, QSize, Qt
+from PySide6.QtCore import QPoint, QSize, Qt, QTimer, Slot
 from PySide6.QtGui import QAction, QGuiApplication, QIcon, QTextCursor, QValidator
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -198,6 +198,9 @@ class ItemEditView:
         self.ui.item_edit_undo_button.clicked.connect(self._on_undo_button_pressed)
         self.ui.item_edit_review_button.clicked.connect(self._on_review_button_pressed)
         self.ui.item_edit_clear_suspects_button.clicked.connect(self._on_clear_suspect_links_button_pressed)
+
+        self._save_timer = QTimer()  # Timer for delaying a save until typing has stopped.
+        self._save_timer.timeout.connect(self._on_save_timer_expired)
 
         self.spell_checkers = []
         self.spell_checkers.append(TextEditSpellChecker(self.ui.item_edit_text_text_edit.document()))
@@ -468,9 +471,15 @@ class ItemEditView:
             print(e)
             return
 
-        self._doorstop_data.save_item(self.item)
         self._update_review_status()
-        self.on_item_changed(self.item)
+        self._save_timer.setSingleShot(True)
+        self._save_timer.start(700)  # Will restart if already ongoing.
+
+    @Slot()
+    def _on_save_timer_expired(self) -> None:
+        if self.item is not None:
+            self._doorstop_data.save_item(self.item)
+            self.on_item_changed(self.item)
 
     def _remove_selected_links_from_widget(self) -> None:
         if self.item is None:
@@ -540,6 +549,7 @@ class ItemEditView:
             },
             extensions=["myst"],
         )
+
         # Using cursor for not bypassing undo buffer (Ctrl-Z).
         #
         # Copy of cursor but can be used since it has pointer to correct document.

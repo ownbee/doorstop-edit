@@ -565,6 +565,26 @@ markdown-it-py = ">=1.0.0,<3.0.0"
 tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 
 [[package]]
+name = "mdformat-footnote"
+version = "0.1.1"
+description = "An mdformat plugin for parsing/validating footnotes"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "mdformat_footnote-0.1.1-py3-none-any.whl", hash = "sha256:30063aaa0f74c36257c2e80fa0cf00d7c71a5277f27e98109e8765ae8678a95b"},
+    {file = "mdformat_footnote-0.1.1.tar.gz", hash = "sha256:3b85c4c84119f15f0b651df89c99a4f6f119fc46dca6b33f7edf4f09655d1126"},
+]
+
+[package.dependencies]
+mdformat = ">=0.7.8,<0.8.0"
+mdit-py-plugins = "*"
+
+[package.extras]
+dev = ["pre-commit"]
+test = ["coverage", "pytest (>=6.0,<7.0)", "pytest-cov"]
+
+[[package]]
 name = "mdformat-frontmatter"
 version = "2.0.1"
 description = "An mdformat plugin for parsing / ignoring frontmatter."
@@ -1343,4 +1363,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12" # PySide does not support higher version atm.
-content-hash = "ceb9013991896914c1ac8f612bf7b80c6c7857f12b03f89444c69d6157fcd71b"
+content-hash = "84480350bcbdb9a6ec8e64857a7dcf93e7adce8f92e20ac2e72978dca8838479"
