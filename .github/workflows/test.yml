@@ -46,7 +46,7 @@ jobs:
         if: ${{ matrix.os == 'Ubuntu' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 x11-utils
+          packages: libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 x11-utils libxcb-cursor0
           version: 1.0
 
       - name: Set up Python ${{ matrix.python-version }}
