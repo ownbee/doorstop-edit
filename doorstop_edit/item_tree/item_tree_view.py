@@ -2,7 +2,7 @@ import logging
 from typing import Callable, List, Optional, Tuple, Union
 
 import doorstop
-from PySide6.QtCore import QPoint, Qt
+from PySide6.QtCore import QPoint, Qt, Slot
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QLineEdit, QMenu, QTreeWidget, QTreeWidgetItem
 
@@ -34,6 +34,7 @@ class ItemTreeView:
         self._tree_widget.setHeaderLabels(["Level", "Header"])
         self._tree_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self._tree_widget.itemSelectionChanged.connect(self._on_item_selection_changed)
+        self._tree_widget.itemPressed.connect(self._on_item_pressed)
         self._tree_widget.customContextMenuRequested.connect(self._prepare_context_menu)
         self._tree_widget.setItemDelegate(CustomColorItemDelegate(self._tree_widget, paint_border=False))
         self._item_tree_search_input = item_tree_search_input
@@ -167,7 +168,7 @@ class ItemTreeView:
         self._update()
 
     @time_function("Updating tree view")
-    def _update(self) -> None:
+    def _update(self, notify_change: bool = True) -> None:
         if self._selected_document_name is None:
             return
         doc = self._doorstop_data.find_document(self._selected_document_name)
@@ -180,15 +181,27 @@ class ItemTreeView:
         self._tree_widget.clearSelection()
         self._tree_widget.clear()
         self._tree_widget.insertTopLevelItems(0, top_level_w_items)
-
+        if notify_change:
+            self.notify_change = True
         for w_item in selected_w_items:
             self._tree_widget.setCurrentItem(w_item)
 
+    @Slot()
     def _on_item_selection_changed(self) -> None:
+        pass
+
+    @Slot(QTreeWidgetItem, int)
+    def _on_item_pressed(self, item: QTreeWidgetItem, _2: int) -> None:
+        self.notify_change = True
+        self._set_selection()
+
+    def _set_selection(self) -> None:
         items = self._tree_widget.selectedItems()
         item_uids = [i.data(ItemTreeView.UID_COLUMN, Qt.ItemDataRole.UserRole) for i in items]
         self._selected_item_uids = item_uids
-        self.on_items_selected(item_uids)
+        if self.notify_change and len(self._selected_item_uids) > 0:
+            self.on_items_selected(item_uids)
+            self.notify_change = False
 
     def _on_show_inactive_items(self, checked: bool) -> None:
         self._filter_show_inactive = checked
@@ -197,7 +210,7 @@ class ItemTreeView:
     def _on_search_input_changed(self, text: str) -> None:
         """Called when search box content changes."""
         self._filter_search_input = text.split()
-        self._update()
+        self._update(notify_change=False)
 
     def _on_delete_item_button_clicked(self, item_uid: str) -> None:
         if not ConfirmDialog.ask(self._tree_widget, f"Do you really want to delete item with UID '{item_uid}'?"):

@@ -27,6 +27,7 @@
     <file alias="add-link">icons/add-link.svg</file>
     <file alias="add-item">icons/add-item.svg</file>
     <file alias="add-document">icons/add-document.svg</file>
+    <file alias="clear-text">icons/clear-text.svg</file>
     <file alias="unfold-more">icons/unfold-more.svg</file>
     <file alias="unfold-less">icons/unfold-less.svg</file>
   </qresource>
