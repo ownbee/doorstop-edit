@@ -4,7 +4,6 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import doorstop
-import mdformat
 from doorstop.core.types import UID as DOORSTOP_UID
 from doorstop.core.types import Level as doorstop_Level
 from doorstop.core.types import Text as doorstop_Text
@@ -26,6 +25,7 @@ from PySide6.QtWidgets import (
 from doorstop_edit.dialogs import ConfirmDialog, DiffDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_edit.item_picker_dialog import ItemPickerDialog
+from doorstop_edit.item_edit.mdformat import format as format_md
 from doorstop_edit.theme import Theme
 from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
 from doorstop_edit.utils.custom_color_item_delegate import CustomColorItemDelegate
@@ -541,14 +541,7 @@ class ItemEditView:
                 if field.widget.hasFocus():
                     widget = field.widget
 
-        new_text = mdformat.text(
-            widget.toPlainText(),
-            options={
-                "number": True,  # switch on consecutive numbering of ordered lists
-                "wrap": 80,
-            },
-            extensions=["myst"],
-        )
+        new_text = format_md(widget.toPlainText())
 
         # Using cursor for not bypassing undo buffer (Ctrl-Z).
         #
