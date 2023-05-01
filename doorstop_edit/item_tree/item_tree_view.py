@@ -230,6 +230,20 @@ class ItemTreeView:
         )
         reload_action.triggered.connect(self._update)
 
+        expand_action = QAction(
+            QIcon(":/icons/unfold-more"),
+            "Expand All",
+            self._tree_widget,
+        )
+        expand_action.triggered.connect(self._tree_widget.expandAll)
+
+        collapse_action = QAction(
+            QIcon(":/icons/unfold-less"),
+            "Collapse All",
+            self._tree_widget,
+        )
+        collapse_action.triggered.connect(self._tree_widget.collapseAll)
+
         item_uid: Optional[str] = None
         item_actions: List[QAction] = []
         if w_item is not None:
@@ -259,6 +273,8 @@ class ItemTreeView:
         actions.append(add_action)
         actions.append(show_inactive_action)
         actions.append(reload_action)
+        actions.append(expand_action)
+        actions.append(collapse_action)
 
         if len(item_actions) > 0:
             actions.append(menu.addSeparator())
