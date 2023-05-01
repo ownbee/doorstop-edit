@@ -72,7 +72,8 @@ class DoorstopEdit:
         self.window.ui.doc_review_tool_button.clicked.connect(self._on_doc_review_all_button_clicked)
         self.window.ui.doc_clear_links_tool_button.clicked.connect(self._on_doc_clear_all_links_button_clicked)
         self.window.ui.doc_reorder_level_tool_button.clicked.connect(self._on_doc_reoder_all_button_clicked)
-
+        self.window.ui.renderer_search_box.textChanged.connect(self._on_renderer_search_box_text_changed)
+        self.window.ui.renderer_search_box.returnPressed.connect(self._on_renderer_search_box_return_pressed)
         self.selected_document: Optional[doorstop.Document] = None
         # Adjust docks width to a sane default (designer seem to not support it).
         self.window.resizeDocks(
@@ -312,3 +313,11 @@ WARNING: This operation cannot be undone!
     def _update_render_progress(self, percentage: int) -> None:
         self.window.ui.render_progress_bar.setMaximum(100)
         self.window.ui.render_progress_bar.setValue(percentage)
+
+    @Slot(str)
+    def _on_renderer_search_box_text_changed(self, text: str) -> None:
+        self.window.ui.web_engine_view.findText(text)
+
+    @Slot()
+    def _on_renderer_search_box_return_pressed(self) -> None:
+        self.window.ui.web_engine_view.findText(self.window.ui.renderer_search_box.text())

@@ -145,6 +145,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QLineEdit" name="renderer_search_box">
+         <property name="placeholderText">
+          <string>Find in document</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
