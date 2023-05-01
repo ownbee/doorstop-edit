@@ -7,7 +7,7 @@ import doorstop
 from doorstop.core.types import UID as DOORSTOP_UID
 from doorstop.core.types import Level as doorstop_Level
 from doorstop.core.types import Text as doorstop_Text
-from PySide6.QtCore import QPoint, QSize, Qt, QTimer, Slot
+from PySide6.QtCore import QKeyCombination, QPoint, QSize, Qt, QTimer, Slot
 from PySide6.QtGui import QAction, QGuiApplication, QIcon, QTextCursor, QValidator
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -191,7 +191,6 @@ class ItemEditView:
         self.item: Optional[doorstop.Item] = None
         self._disable_save = False
         self._loaded_extended_attributes: Dict[str, Tuple[QWidget, QWidget]] = {}
-        self.ui.edit_item_text_format_button.clicked.connect(self._on_text_format_button_pressed)
         self.ui.edit_item_wrap_text_button.clicked.connect(self._on_wrap_text_button_pressed)
         self.ui.item_edit_copy_uid_clipboard_button.clicked.connect(self._on_copy_uid_to_clipboard_button_pressed)
         self.ui.item_edit_diff_button.clicked.connect(self._on_diff_button_pressed)
@@ -272,6 +271,11 @@ class ItemEditView:
         for field in self.fields:
             self._connect_field(field)
 
+        self.format_action = QAction(QIcon(":/icons/format-text"), "Format Text", self.ui.edit_item_dock_widget)
+        self.format_action.setShortcut(QKeyCombination(Qt.Modifier.ALT, Qt.Key.Key_Q))
+        self.format_action.triggered.connect(self._on_markdown_format_text_edit)
+        self.ui.edit_item_dock_widget.addAction(self.format_action)  # To enable shortcut.
+
         self._update_view()
 
     def reload(self) -> None:
@@ -292,6 +296,11 @@ class ItemEditView:
         if isinstance(field.widget, QLineEdit):
             field.widget.textChanged.connect(lambda x, field=field: self._on_field_updated(field, x))
         elif isinstance(field.widget, QPlainTextEdit):
+
+            field.widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            field.widget.customContextMenuRequested.connect(
+                lambda point, widget=field.widget: (self._on_create_text_edit_attribute_context_menu(widget, point))
+            )
             field.widget.textChanged.connect(
                 lambda field=field: self._on_field_updated(field, field.widget.toPlainText())
             )
@@ -525,6 +534,11 @@ class ItemEditView:
         menu.addActions(actions)
         menu.exec(self.ui.item_edit_link_list.mapToGlobal(pos))
 
+    def _on_create_text_edit_attribute_context_menu(self, text_edit: QPlainTextEdit, pos: QPoint) -> None:
+        menu = text_edit.createStandardContextMenu()
+        menu.addAction(self.format_action)
+        menu.exec(text_edit.mapToGlobal(pos))
+
     def _on_wrap_text_button_pressed(self, checked: bool) -> None:
         for widget in [f.widget for f in self.fields] + [self.ui.item_edit_text_text_edit]:
             if isinstance(widget, QPlainTextEdit):
@@ -532,8 +546,8 @@ class ItemEditView:
                     QPlainTextEdit.LineWrapMode.WidgetWidth if checked else QPlainTextEdit.LineWrapMode.NoWrap
                 )
 
-    def _on_text_format_button_pressed(self) -> None:
-        widget: QPlainTextEdit = self.ui.item_edit_text_text_edit
+    def _on_markdown_format_text_edit(self) -> None:
+        widget: Optional[QPlainTextEdit] = None
 
         # Choose custom field instead if it is focused. This only works if shortcut is used.
         for field in self.fields:
@@ -541,7 +555,12 @@ class ItemEditView:
                 if field.widget.hasFocus():
                     widget = field.widget
 
+        if widget is None:
+            return
+
         new_text = format_md(widget.toPlainText())
+        if new_text == widget.toPlainText():
+            return  # To avoid touching undo buffer
 
         # Using cursor for not bypassing undo buffer (Ctrl-Z).
         #

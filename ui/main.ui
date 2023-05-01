@@ -193,7 +193,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>276</width>
+     <width>306</width>
      <height>138</height>
     </size>
    </property>
@@ -318,6 +318,23 @@
          </spacer>
         </item>
         <item>
+         <widget class="QToolButton" name="edit_item_wrap_text_button">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wrap text that do not fit the window. &lt;/p&gt;&lt;p&gt;Applied to custom text input fields as well. &lt;/p&gt;&lt;p&gt;This button does not affect the result written to file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Wrap</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resources.qrc">
+            <normaloff>:/icons/wrap</normaloff>:/icons/wrap</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QToolButton" name="item_edit_review_button">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mark item as reviewed.&lt;/p&gt;&lt;p&gt;Calculates and stores fingerprint (checksum) of attributes that are part of the fingerprint. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -419,7 +436,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>529</width>
+          <width>351</width>
           <height>836</height>
          </rect>
         </property>
@@ -455,15 +472,12 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QGroupBox" name="item_edit_group">
+          <widget class="QFrame" name="item_edit_group">
            <property name="maximumSize">
             <size>
              <width>16777215</width>
              <height>16777215</height>
             </size>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <property name="spacing">
@@ -503,6 +517,18 @@
               </property>
               <property name="verticalSpacing">
                <number>2</number>
+              </property>
+              <property name="leftMargin">
+               <number>4</number>
+              </property>
+              <property name="topMargin">
+               <number>4</number>
+              </property>
+              <property name="rightMargin">
+               <number>4</number>
+              </property>
+              <property name="bottomMargin">
+               <number>4</number>
               </property>
               <item row="0" column="1">
                <widget class="QLabel" name="item_edit_review_status_label">
@@ -660,60 +686,6 @@
                  <property name="bottomMargin">
                   <number>0</number>
                  </property>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_8">
-                   <property name="spacing">
-                    <number>6</number>
-                   </property>
-                   <item>
-                    <widget class="QToolButton" name="edit_item_text_format_button">
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Markdown format text (Alt-Q)&lt;/p&gt;&lt;p&gt;If shortcut is used the focued text field are formatted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                     </property>
-                     <property name="text">
-                      <string>F</string>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="resources.qrc">
-                       <normaloff>:/icons/format-text</normaloff>:/icons/format-text</iconset>
-                     </property>
-                     <property name="shortcut">
-                      <string>Alt+Q</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QToolButton" name="edit_item_wrap_text_button">
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wrap text that do not fit the window. &lt;/p&gt;&lt;p&gt;Applied to custom text input fields as well. &lt;/p&gt;&lt;p&gt;This button does not affect the result written to file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                     </property>
-                     <property name="text">
-                      <string>Wrap</string>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="resources.qrc">
-                       <normaloff>:/icons/wrap</normaloff>:/icons/wrap</iconset>
-                     </property>
-                     <property name="checkable">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </item>
                  <item>
                   <widget class="QPlainTextEdit" name="item_edit_text_text_edit">
                    <property name="sizePolicy">

@@ -13,3 +13,4 @@ doorstop_edit/build_info.py
 .coverage
 coverage.xml
 htmlcov/
+ui/*.py
