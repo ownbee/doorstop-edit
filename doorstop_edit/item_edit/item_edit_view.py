@@ -507,7 +507,7 @@ class ItemEditView:
             self._on_field_updated(self.links_field, (w_item, False))
 
     def _open_links_picker(self) -> None:
-        dialog = ItemPickerDialog(self._doorstop_data, self._add_link)
+        dialog = ItemPickerDialog(self.ui.edit_item_dock_widget, self._doorstop_data, self._add_link)
         dialog.show()
 
     def _add_link(self, item_uid: str) -> None:
