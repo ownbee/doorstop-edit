@@ -30,7 +30,6 @@ way as doorstop.
 **TODO list:**
 
 * Add and remove document.
-* Remembering changed layout between restarts.
 * Validating documents and items in a user-friendly manner.
 * Ability to change project root.
 
