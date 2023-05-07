@@ -4,6 +4,11 @@ QPlainTextEdit {
     background-color: __QTMATERIAL_SECONDARYCOLOR__;
 }
 
+QLineEdit,
+QComboBox {
+  color: __QTMATERIAL_SECONDARYTEXTCOLOR__;
+}
+
 QTreeView::item,
 QListView::item {
   padding: 4px;
