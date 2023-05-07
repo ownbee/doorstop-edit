@@ -1,13 +1,14 @@
 import functools
 import logging
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 import doorstop
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QAction, QGuiApplication
 from PySide6.QtWidgets import QApplication, QDialog, QDockWidget
 
+from doorstop_edit.app_signals import AppSignals
 from doorstop_edit.dialogs import ConfirmDialog, InfoDialog, SettingDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_edit.item_edit_view import ItemEditView
@@ -21,9 +22,11 @@ from doorstop_edit.utils.version_summary import create_version_summary
 logger = logging.getLogger("gui")
 
 
-class DoorstopEdit:
+class DoorstopEdit(AppSignals):
     def __init__(self, root: Path) -> None:
         self.window = MainWindow()
+        super().__init__(self.window)
+
         self.doorstop_data = DoorstopData(self.window, root)
         self.doorstop_data.tree_changed.connect(self._on_tree_changed)
         self.setting_dialog = SettingDialog(self.window)
@@ -51,21 +54,13 @@ class DoorstopEdit:
         self.item_render_view.render_progress.connect(self._update_render_progress)
 
         self.tree_view = ItemTreeView(
+            self,
             self.window.ui.item_tree_widget,
             self.window.ui.item_tree_search_input,
             self.doorstop_data,
         )
-        self.tree_view.on_items_selected = self._on_item_tree_selection_changed
-        self.tree_view.on_add_item = self._on_add_item
-        self.tree_view.on_open_viewer = self._popup_item_viewer
-
-        self.pinned_items_view = PinnedItemsView(self.doorstop_data, self.window.ui.pinned_items_list)
-        self.pinned_items_view.on_selected_item = self._on_selected_pinned_item
-        self.tree_view.on_pinned_item = self.pinned_items_view.add
-
-        self.item_edit_view = ItemEditView(self.window.ui, self.doorstop_data)
-        self.item_edit_view.on_item_changed = self._on_item_edit
-        self.item_edit_view.on_open_viewer = self._popup_item_viewer
+        self.pinned_items_view = PinnedItemsView(self, self.doorstop_data, self.window.ui.pinned_items_list)
+        self.item_edit_view = ItemEditView(self, self.window.ui, self.doorstop_data)
         self.window.ui.tree_combo_box.currentIndexChanged.connect(self._on_selected_document_change)
         self.window.ui.view_items_mode.currentTextChanged.connect(self._on_view_mode_changed)
         self.window.ui.doc_review_tool_button.clicked.connect(self._on_doc_review_all_button_clicked)
@@ -80,6 +75,11 @@ class DoorstopEdit:
             [500, 800],
             Qt.Orientation.Horizontal,
         )
+
+        self.view_item.connect(self._on_view_item)
+        self.add_item.connect(self._on_add_item)
+        self.add_pin.connect(self.pinned_items_view.add)
+        self.item_changed.connect(self._on_item_changed)
 
         self.item_render_view.show(None)  # Set empty but with correct colors (css).
 
@@ -125,24 +125,21 @@ class DoorstopEdit:
         self.selected_document = document
         self._update_item_tree(document)
 
-    def _on_item_tree_selection_changed(self, item_uids: List[str]) -> None:
-        if len(item_uids) == 0:
-            return
-
+    def _open_item_in_current_document(self, item_uid: str) -> None:
         if not self.selected_document:
             return
 
-        logger.debug("Item tree selection changed to %s", item_uids)
+        logger.debug("Open item with uid %s", item_uid)
 
         try:
-            item = self.doorstop_data.find_item(item_uids[0], self.selected_document)
+            item = self.doorstop_data.find_item(item_uid, self.selected_document)
             if item is None:
                 return
             item.load(reload=True)  # In case change on disk.
             self.item_render_view.show(item)
             self.item_edit_view.update_item(item)
         except doorstop.DoorstopError as e:
-            print(e)
+            logger.error(e)
             return
 
     def _on_selected_document_change(self, index: int) -> None:
@@ -167,17 +164,19 @@ class DoorstopEdit:
         elif new_mode == "Item":
             self.item_render_view.set_view_mode(ItemRenderView.ViewMode.Item)
 
-    def _on_item_edit(self, item: doorstop.Item) -> None:
+    @Slot(doorstop.Item)
+    def _on_item_changed(self, item: doorstop.Item) -> None:
         self.item_render_view.show(item)
         self.tree_view.update_selected_items([item])
 
-    def _on_add_item(self, item_uid: Optional[str]) -> None:
+    @Slot(str)
+    def _on_add_item(self, after_item_uid: Optional[str]) -> None:
         if self.selected_document is None:
             return
 
         level = None
-        if item_uid is not None:
-            item = self.doorstop_data.find_item(item_uid)
+        if after_item_uid is not None:
+            item = self.doorstop_data.find_item(after_item_uid)
             if item is not None:
                 try:
                     level = str(item.level)
@@ -199,13 +198,6 @@ class DoorstopEdit:
         else:
             dock.close()
 
-    def _on_selected_pinned_item(self, item_uid: str) -> None:
-        item = self.doorstop_data.find_item(item_uid)
-        if item is None:
-            return
-        self.item_render_view.show(item)
-        self.item_edit_view.update_item(item)
-
     def _on_about_clicked(self) -> None:
         def on_clicked(text: str) -> bool:
             QGuiApplication.clipboard().setText(text)
@@ -226,6 +218,13 @@ class DoorstopEdit:
             extra_button_cb=functools.partial(on_clicked, version_summary),
             extra_button_icon=":/icons/copy",
         )
+
+    @Slot(str, bool)
+    def _on_view_item(self, item_uid: str, new_window: bool) -> None:
+        if new_window:
+            self._popup_item_viewer(item_uid)
+        else:
+            self._open_item_in_current_document(item_uid)
 
     def _popup_item_viewer(self, item_uid: str) -> None:
         item = self.doorstop_data.find_item(item_uid)

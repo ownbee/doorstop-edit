@@ -1,11 +1,12 @@
 import logging
-from typing import Callable, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import doorstop
 from PySide6.QtCore import QPoint, Qt, Slot
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QLineEdit, QMenu, QTreeWidget, QTreeWidgetItem
 
+from doorstop_edit.app_signals import AppSignals
 from doorstop_edit.dialogs import ConfirmDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_tree.document_item_level_tree import (
@@ -25,15 +26,16 @@ class ItemTreeView:
 
     def __init__(
         self,
+        signals: AppSignals,
         tree_widget: QTreeWidget,
         item_tree_search_input: QLineEdit,
         doorstop_data: DoorstopData,
     ) -> None:
+        self._signals = signals
         self._tree_widget = tree_widget
         self._tree_widget.setColumnCount(2)
         self._tree_widget.setHeaderLabels(["Level", "Header"])
         self._tree_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self._tree_widget.itemSelectionChanged.connect(self._on_item_selection_changed)
         self._tree_widget.itemPressed.connect(self._on_item_pressed)
         self._tree_widget.customContextMenuRequested.connect(self._prepare_context_menu)
         self._tree_widget.setItemDelegate(CustomColorItemDelegate(self._tree_widget, paint_border=False))
@@ -43,13 +45,6 @@ class ItemTreeView:
 
         self._selected_document_name: Optional[str] = None
         self._selected_item_uids: List[str] = []
-
-        self.on_items_selected: Callable[[List[str]], None] = lambda x: logger.info("on_items_selected not conntected")
-        self.on_pinned_item: Callable[[str], None] = lambda x: logger.info("on_pinned_item not connected")
-        self.on_add_item: Callable[[Optional[str]], None] = lambda item_uid: logger.info(
-            "on_add_item not connected, called with uid %s", item_uid
-        )
-        self.on_open_viewer: Callable[[str], None] = lambda x: logger.info("on_open_viewer not connected")
 
         self._filter_show_inactive = False
         self._filter_search_input: List[str] = []
@@ -157,7 +152,7 @@ class ItemTreeView:
         norm_items = []
         for item in items:
             if isinstance(item, doorstop.Item):
-                norm_items.append(str(item.uid))
+                norm_items.append(item.uid.value)
             else:
                 norm_items.append(item)
         self._selected_item_uids = norm_items
@@ -186,10 +181,6 @@ class ItemTreeView:
         for w_item in selected_w_items:
             self._tree_widget.setCurrentItem(w_item)
 
-    @Slot()
-    def _on_item_selection_changed(self) -> None:
-        pass
-
     @Slot(QTreeWidgetItem, int)
     def _on_item_pressed(self, item: QTreeWidgetItem, _2: int) -> None:
         self.notify_change = True
@@ -200,7 +191,7 @@ class ItemTreeView:
         item_uids = [i.data(ItemTreeView.UID_COLUMN, Qt.ItemDataRole.UserRole) for i in items]
         self._selected_item_uids = item_uids
         if self.notify_change and len(self._selected_item_uids) > 0:
-            self.on_items_selected(item_uids)
+            self._signals.view_item.emit(item_uids[0], False)
             self.notify_change = False
 
     def _on_show_inactive_items(self, checked: bool) -> None:
@@ -270,17 +261,19 @@ class ItemTreeView:
 
             pin_action = QAction(QIcon(":/icons/pin"), "Pin", self._tree_widget)
             pin_action.setCheckable(False)
-            pin_action.triggered.connect(lambda checked=False, item_uid=item_uid: self.on_pinned_item(item_uid))
+            pin_action.triggered.connect(lambda checked=False, item_uid=item_uid: self._signals.add_pin.emit(item_uid))
 
             view_action = QAction(QIcon(":/icons/view-item"), "Popup", self._tree_widget)
-            view_action.triggered.connect(lambda checked=False, item_uid=item_uid: self.on_open_viewer(item_uid))
+            view_action.triggered.connect(
+                lambda checked=False, item_uid=item_uid: self._signals.view_item.emit(item_uid, True)
+            )
 
             item_actions.append(delete_action)
             item_actions.append(pin_action)
             item_actions.append(view_action)
 
         add_action = QAction(QIcon(":/icons/add-item"), "New Item", self._tree_widget)
-        add_action.triggered.connect(lambda checked=False, uid=item_uid: self.on_add_item(item_uid=uid))  # type: ignore
+        add_action.triggered.connect(lambda checked=False, uid=item_uid: self._signals.add_item.emit(uid))
 
         actions = []
         actions.append(add_action)

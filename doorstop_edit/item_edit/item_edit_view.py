@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from doorstop_edit.app_signals import AppSignals
 from doorstop_edit.dialogs import ConfirmDialog, DiffDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_edit.item_picker_dialog import ItemPickerDialog
@@ -188,12 +189,11 @@ class ItemEditView:
         IN_GROUP = "ItemEdit"
         wrap_text = False
 
-    def __init__(self, ui: Ui_MainWindow, doorstop_data: DoorstopData) -> None:
+    def __init__(self, signals: AppSignals, ui: Ui_MainWindow, doorstop_data: DoorstopData) -> None:
+        self._signals = signals
         self.ui = ui
         self._doorstop_data = doorstop_data
         self._settings = self.Settings()
-        self.on_item_changed: Callable[[doorstop.Item], None] = lambda x: logger.info("on_item_changed not connected.")
-        self.on_open_viewer: Callable[[str], None] = lambda x: logger.info("on_open_viewer not connected")
         self.item: Optional[doorstop.Item] = None
         self._disable_save = False
         self._loaded_extended_attributes: Dict[str, Tuple[QWidget, QWidget]] = {}
@@ -496,7 +496,7 @@ class ItemEditView:
     def _on_save_timer_expired(self) -> None:
         if self.item is not None:
             self._doorstop_data.save_item(self.item)
-            self.on_item_changed(self.item)
+            self._signals.item_changed.emit(self.item)
 
     def _remove_selected_links_from_widget(self) -> None:
         if self.item is None:
@@ -535,7 +535,9 @@ class ItemEditView:
             actions.append(remove_action)
 
             view_action = QAction(QIcon(":/icons/view-item"), "Popup", self.ui.item_edit_link_list)
-            view_action.triggered.connect(lambda checked=False, item_uid=item_uid: self.on_open_viewer(item_uid))
+            view_action.triggered.connect(
+                lambda checked=False, item_uid=item_uid: self._signals.view_item.emit(item_uid, True)
+            )
             actions.append(view_action)
 
         menu = QMenu(self.ui.item_edit_link_list)
@@ -604,7 +606,7 @@ class ItemEditView:
             return
         self._doorstop_data.restore_item(self.item)
         self._update_view()
-        self.on_item_changed(self.item)  # Update tree view.
+        self._signals.item_changed.emit(self.item)  # Update tree view.
 
     def _on_review_button_pressed(self) -> None:
         if self.item is None:
@@ -616,7 +618,7 @@ class ItemEditView:
         self.item.review()
         self._doorstop_data.save_item(self.item)
         self._update_view()  # Redraw review status.
-        self.on_item_changed(self.item)  # Update tree view.
+        self._signals.item_changed.emit(self.item)  # Update tree view.
 
     def _on_clear_suspect_links_button_pressed(self) -> None:
         if self.item is None:
@@ -628,4 +630,4 @@ class ItemEditView:
         self.item.clear()
         self._doorstop_data.save_item(self.item)
         self._update_view()  # Redraw links list.
-        self.on_item_changed(self.item)  # Update tree view.
+        self._signals.item_changed.emit(self.item)  # Update tree view.
