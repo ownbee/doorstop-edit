@@ -19,15 +19,15 @@ class PinnedItemsView:
         )
         self._list_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self._list_widget.customContextMenuRequested.connect(self._prepare_links_context_menu)
-        self._list_widget.itemClicked.connect(self._on_item_clicked)
+        self._list_widget.itemDoubleClicked.connect(self._on_item_clicked)
 
     def add(self, item_uid: str) -> None:
         item = self._doorstop_data.find_item(item_uid)
         if item is None:
             return
-        text = f"[{item.uid}] {item.level} - {item.header}"
+        text = f"[{item.uid}] [{item.level}] {item.header}"
         w_item = QListWidgetItem(text)
-        w_item.setData(1, str(item.uid))
+        w_item.setData(Qt.ItemDataRole.UserRole, str(item.uid))
         self._list_widget.addItem(w_item)
 
     def _remove_selected(self) -> None:
@@ -40,7 +40,7 @@ class PinnedItemsView:
         if len(selected_items) == 0:
             return
         selected = selected_items[-1]
-        uid: str = selected.data(1)
+        uid: str = selected.data(Qt.ItemDataRole.UserRole)
         self.on_selected_item(uid)
 
     def _prepare_links_context_menu(self, pos: QPoint) -> None:
