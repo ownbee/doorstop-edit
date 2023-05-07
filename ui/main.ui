@@ -170,6 +170,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="menu_action_settings"/>
+    <addaction name="separator"/>
     <addaction name="menu_action_exit"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -978,7 +980,7 @@ Blah blah blah</string>
           <item>
            <widget class="QLineEdit" name="item_tree_search_input">
             <property name="placeholderText">
-             <string>Search...</string>
+             <string>Filter...</string>
             </property>
            </widget>
           </item>
@@ -1115,6 +1117,14 @@ Blah blah blah</string>
   <action name="menu_action_about">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="menu_action_settings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+   <property name="toolTip">
+    <string>Open settings</string>
    </property>
   </action>
  </widget>

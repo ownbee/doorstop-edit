@@ -5,42 +5,41 @@ from typing import List, Optional
 
 import doorstop
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtGui import QGuiApplication
-from PySide6.QtWidgets import QApplication, QDialog, QDockWidget, QMainWindow
+from PySide6.QtGui import QAction, QGuiApplication
+from PySide6.QtWidgets import QApplication, QDialog, QDockWidget
 
-from doorstop_edit.dialogs import ConfirmDialog, InfoDialog
+from doorstop_edit.dialogs import ConfirmDialog, InfoDialog, SettingDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_edit.item_edit_view import ItemEditView
 from doorstop_edit.item_render.item_render_view import ItemRenderView
 from doorstop_edit.item_tree.item_tree_view import ItemTreeView
+from doorstop_edit.main_window import MainWindow
 from doorstop_edit.pinned_items.pinned_items_view import PinnedItemsView
 from doorstop_edit.ui_gen.ui_item_viewer import Ui_ItemViewer
-from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
 from doorstop_edit.utils.version_summary import create_version_summary
 
 logger = logging.getLogger("gui")
 
 
-class _MainWindow(QMainWindow):
-    def __init__(self) -> None:
-        super().__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-
-
 class DoorstopEdit:
     def __init__(self, root: Path) -> None:
-        self.window = _MainWindow()
+        self.window = MainWindow()
         self.doorstop_data = DoorstopData(self.window, root)
         self.doorstop_data.tree_changed.connect(self._on_tree_changed)
+        self.setting_dialog = SettingDialog(self.window)
+        self.setting_dialog.on_theme_changed.connect(lambda window=self.window: window.update_theme())
+        self.window.ui.menu_action_settings.triggered.connect(self._open_settings_dialog)
 
         self.window.ui.menu_action_exit.triggered.connect(QApplication.exit)
+        self.window.ui.item_tree_dock_widget.visibilityChanged.connect(self._dock_item_tree_visibility_changed)
         self.window.ui.menu_action_show_document_tree.triggered[bool].connect(  # type: ignore
             lambda checked, dock=self.window.ui.item_tree_dock_widget: self._on_toggle_dock_widget(checked, dock)
         )
+        self.window.ui.edit_item_dock_widget.visibilityChanged.connect(self._dock_item_edit_visibility_changed)
         self.window.ui.menu_action_show_item_editor.triggered[bool].connect(  # type: ignore
             lambda checked, dock=self.window.ui.edit_item_dock_widget: self._on_toggle_dock_widget(checked, dock)
         )
+        self.window.ui.pinned_items_dock_widget.visibilityChanged.connect(self._dock_pinned_items_visibility_changed)
         self.window.ui.menu_action_show_pinned_items.triggered[bool].connect(  # type: ignore
             lambda checked, dock=self.window.ui.pinned_items_dock_widget: self._on_toggle_dock_widget(checked, dock)
         )
@@ -90,6 +89,10 @@ class DoorstopEdit:
     def start(self) -> None:
         self.doorstop_data.start()
         self.window.show()
+
+        self._dock_item_tree_visibility_changed(self.window.ui.item_tree_dock_widget.isVisible())
+        self._dock_item_edit_visibility_changed(self.window.ui.edit_item_dock_widget.isVisible())
+        self._dock_pinned_items_visibility_changed(self.window.ui.pinned_items_dock_widget.isVisible())
 
         if len(self.doorstop_data.get_documents()) == 0:
             msg = "No doorstop documents found in project root."
@@ -321,3 +324,22 @@ WARNING: This operation cannot be undone!
     @Slot()
     def _on_renderer_search_box_return_pressed(self) -> None:
         self.window.ui.web_engine_view.findText(self.window.ui.renderer_search_box.text())
+
+    def _on_dock_visibility_changed(self, visible: bool, action: QAction) -> None:
+        action.setChecked(visible)
+
+    @Slot(bool)
+    def _dock_item_tree_visibility_changed(self, visible: bool) -> None:
+        self._on_dock_visibility_changed(visible, self.window.ui.menu_action_show_document_tree)
+
+    @Slot(bool)
+    def _dock_item_edit_visibility_changed(self, visible: bool) -> None:
+        self._on_dock_visibility_changed(visible, self.window.ui.menu_action_show_item_editor)
+
+    @Slot(bool)
+    def _dock_pinned_items_visibility_changed(self, visible: bool) -> None:
+        self._on_dock_visibility_changed(visible, self.window.ui.menu_action_show_pinned_items)
+
+    @Slot()
+    def _open_settings_dialog(self) -> None:
+        self.setting_dialog.open()

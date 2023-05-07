@@ -26,6 +26,7 @@ from doorstop_edit.dialogs import ConfirmDialog, DiffDialog
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_edit.item_picker_dialog import ItemPickerDialog
 from doorstop_edit.item_edit.mdformat import format as format_md
+from doorstop_edit.settings import PersistentSetting
 from doorstop_edit.theme import Theme
 from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
 from doorstop_edit.utils.custom_color_item_delegate import CustomColorItemDelegate
@@ -183,10 +184,15 @@ class Field:
 
 
 class ItemEditView:
+    class Settings(PersistentSetting):
+        IN_GROUP = "ItemEdit"
+        wrap_text = False
+
     def __init__(self, ui: Ui_MainWindow, doorstop_data: DoorstopData) -> None:
         self.ui = ui
         self._doorstop_data = doorstop_data
-        self.on_item_changed: Callable[[doorstop.Item], None] = lambda x: print("on_item_changed not connected.")
+        self._settings = self.Settings()
+        self.on_item_changed: Callable[[doorstop.Item], None] = lambda x: logger.info("on_item_changed not connected.")
         self.on_open_viewer: Callable[[str], None] = lambda x: logger.info("on_open_viewer not connected")
         self.item: Optional[doorstop.Item] = None
         self._disable_save = False
@@ -276,6 +282,9 @@ class ItemEditView:
         self.format_action.triggered.connect(self._on_markdown_format_text_edit)
         self.ui.edit_item_dock_widget.addAction(self.format_action)  # To enable shortcut.
 
+        self.ui.edit_item_wrap_text_button.setChecked(self._settings.wrap_text)
+        self._on_wrap_text_button_pressed(self._settings.wrap_text)
+
         self._update_view()
 
     def reload(self) -> None:
@@ -296,7 +305,6 @@ class ItemEditView:
         if isinstance(field.widget, QLineEdit):
             field.widget.textChanged.connect(lambda x, field=field: self._on_field_updated(field, x))
         elif isinstance(field.widget, QPlainTextEdit):
-
             field.widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
             field.widget.customContextMenuRequested.connect(
                 lambda point, widget=field.widget: (self._on_create_text_edit_attribute_context_menu(widget, point))
@@ -309,7 +317,7 @@ class ItemEditView:
         elif isinstance(field.widget, QListWidget):
             pass  # Special handling...
         else:
-            print(f"Warning: connect not implemented for {type(field.widget)}")
+            logger.warning(f"connect not implemented for {type(field.widget)}")
 
     def _parse_extended_attributes(self, item: doorstop.Item) -> None:
         """Parse extended attributes (lazy load) from item.
@@ -426,7 +434,7 @@ class ItemEditView:
                     for w_item in field.conv_to_widget(attr):
                         field.widget.addItem(w_item)
                 else:
-                    print(f"Warning: conv_to_widget not implemented for {type(field.widget)}")
+                    logger.warning(f"conv_to_widget not implemented for {type(field.widget)}")
             self._enable(True)
         finally:
             self._disable_save = False
@@ -449,7 +457,7 @@ class ItemEditView:
                 elif isinstance(field.widget, QListWidget):
                     field.widget.clear()
                 else:
-                    print(f"Warning: clear not implemented for {type(field.widget)}")
+                    logger.warning(f"clear not implemented for {type(field.widget)}")
 
     def _update_review_status(self) -> None:
         if self.item is None:
@@ -477,7 +485,7 @@ class ItemEditView:
             self.item._data[field.item_attr] = field.conv_from_widget(value, attr)
         except ValueError as e:
             # Only log, do not save or anything else.
-            print(e)
+            logger.error(e)
             return
 
         self._update_review_status()
@@ -540,6 +548,7 @@ class ItemEditView:
         menu.exec(text_edit.mapToGlobal(pos))
 
     def _on_wrap_text_button_pressed(self, checked: bool) -> None:
+        self._settings.wrap_text = checked
         for widget in [f.widget for f in self.fields] + [self.ui.item_edit_text_text_edit]:
             if isinstance(widget, QPlainTextEdit):
                 widget.setLineWrapMode(

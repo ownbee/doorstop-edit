@@ -1,20 +1,16 @@
 import argparse
 import logging
-import os
-import re
 import sys
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import List, Optional
 
 import doorstop
 from doorstop import settings as doorstop_settings
 from PySide6.QtCore import QLoggingCategory, QSize
 from PySide6.QtGui import QFontDatabase, QIcon, Qt
 from PySide6.QtWidgets import QApplication, QSplashScreen
-from qt_material import apply_stylesheet
 
 from doorstop_edit.application import DoorstopEdit
-from doorstop_edit.theme import setup_colors
 from doorstop_edit.utils.version_summary import create_version_summary
 
 logger = logging.getLogger("gui")
@@ -36,45 +32,10 @@ def show_splash_screen(app: QApplication) -> QSplashScreen:
     return splash
 
 
-def load_custom_css() -> str:
-    with open(Path(__file__).parent / "custom.css", "r", encoding="utf-8") as file:
-        custom_css = file.read()
-
-    result = re.findall("__(.*)__", custom_css)
-    for replace_val in result:
-        if replace_val in os.environ:
-            custom_css = custom_css.replace("__" + replace_val + "__", os.environ[replace_val])
-        else:
-            raise RuntimeError(f"Failed to expand {replace_val} in css")
-
-    return custom_css
-
-
-def setup_style(app: QApplication, args: Any) -> None:
-    # Setup custom theme
-    extra = {
-        # Button colors
-        "danger": "#dc3545",
-        "warning": "#ffc107",
-        "success": "#17a2b8",
-        # Font
-        "font_family": "Roboto",
-        "font_size": args.font_size,
-        "line_height": args.font_size,
-        # Density Scale
-        "density_scale": args.density,
-    }
-    apply_stylesheet(app, theme="dark_teal.xml", extra=extra)
-    app.setStyleSheet(app.styleSheet() + load_custom_css())
-    setup_colors(extra)
-
-
 def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true", help="turn on verbose logging")
     parser.add_argument("--version", action="store_true", help="turn on verbose logging")
-    parser.add_argument("--font-size", default=13, type=int, help="set custom font-size")
-    parser.add_argument("--density", default=-1, type=int, help="set density scale (make thing smaller or bigger)")
     parser.add_argument("directory", default=".", nargs="?", help="Doorstop root directory")
     args = parser.parse_args(argv[1:])
 
@@ -96,8 +57,6 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
 
     # Add custom font
     QFontDatabase.addApplicationFont(":/font/DroidSansMono.ttf")
-
-    setup_style(app, args)
 
     # Disable info logs from WebEngine
     web_engine_context_log = QLoggingCategory("qt.webenginecontext")  # type: ignore
