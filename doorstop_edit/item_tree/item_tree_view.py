@@ -15,7 +15,7 @@ from doorstop_edit.item_tree.document_item_level_tree import (
 from doorstop_edit.theme import Theme
 from doorstop_edit.utils.custom_color_item_delegate import CustomColorItemDelegate
 from doorstop_edit.utils.debug_timer import time_function
-from doorstop_edit.utils.item_matcher import match_item
+from doorstop_edit.utils.item_utils import match_item
 
 logger = logging.getLogger("gui")
 
@@ -77,9 +77,9 @@ class ItemTreeView:
         if not bool(item.normative) and str(item.level).endswith(".0"):
             # Header-only item.
             font_style = "b"
-            test_lines = item.text.splitlines()
-            if len(test_lines) > 0:
-                text = test_lines[0]
+            text_lines = item.text.splitlines()
+            if len(text_lines) > 0:
+                text = text_lines[0]
             else:
                 text = ""
 

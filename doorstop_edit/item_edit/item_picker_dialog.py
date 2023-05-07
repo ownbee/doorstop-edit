@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QDialog, QListWidgetItem
 
 from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.ui_gen.ui_item_picker import Ui_ItemPickerDialog
-from doorstop_edit.utils.item_matcher import match_item
+from doorstop_edit.utils.item_utils import match_item
 
 
 class _ItemPickerDialog(QDialog):

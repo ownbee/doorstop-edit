@@ -17,6 +17,7 @@ from PySide6.QtCore import (
 )
 
 from doorstop_edit.item_render.fragmented_markdown import Element, FragmentedMarkdown
+from doorstop_edit.utils import item_utils
 from doorstop_edit.utils.debug_timer import time_function
 
 logger = logging.getLogger("gui")
@@ -70,13 +71,18 @@ def process(q: mp.Queue, root: str, items: List[doorstop.Item]) -> None:
 
 
 def _render_item(md: FragmentedMarkdown, item: doorstop.Item, attrs: List[Tuple[str, Union[str, Element]]]) -> str:
-    if str(item.level).endswith(".0") and not item.normative:
+    if item_utils.is_header_item(item):
         levels = str(item.level).count(".")
         header_tag = f"h{levels}"
+        header = ""
+        text_lines = item.text.splitlines()
+        if len(text_lines) > 0:
+            header = text_lines[0]
     else:
         header_tag = "p"
+        header = item.header
 
-    html = f"<{header_tag}><b>{str(item.level)} {item.header}</b> <small>{item.uid.value}</small></{header_tag}>"
+    html = f"<{header_tag}><b>{str(item.level)} {header}</b> <small>{item.uid.value}</small></{header_tag}>"
 
     html += '<table class="req-table">'
     for attr, val in attrs:
@@ -98,7 +104,11 @@ def _render_item(md: FragmentedMarkdown, item: doorstop.Item, attrs: List[Tuple[
 
 def _prepare(md: FragmentedMarkdown, item: doorstop.Item) -> List[Tuple[str, Union[str, Element]]]:
     rows: List[Tuple[str, Union[str, Element]]] = []
-    rows.append(("text", md.add_fragement(item.text) or ""))
+    if item_utils.is_header_item(item):
+        item_text = "\n".join(item.text.splitlines()[1:])
+    else:
+        item_text = item.text
+    rows.append(("text", md.add_fragement(item_text) or ""))
     if item.document and item.document.publish:
         for attr in item.document.publish:
             if attr in [row[0] for row in rows]:

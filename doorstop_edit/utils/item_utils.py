@@ -50,3 +50,8 @@ def match_level(item: doorstop.Item, level: Union[str, doorstop_Level], include_
         return True
 
     return False
+
+
+def is_header_item(item: doorstop.Item) -> bool:
+    """Returns true if item is considered a header item."""
+    return str(item.level).endswith(".0") and not item.normative

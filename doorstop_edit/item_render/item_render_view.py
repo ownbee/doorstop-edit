@@ -12,7 +12,7 @@ from doorstop_edit.doorstop_data import DoorstopData
 from doorstop_edit.item_render.markdown_css import MARKDOWN_CSS
 from doorstop_edit.item_render.render_worker import RenderWorker
 from doorstop_edit.utils.debug_timer import time_function
-from doorstop_edit.utils.item_matcher import match_level
+from doorstop_edit.utils.item_utils import match_level
 
 logger = logging.getLogger("gui")
 
