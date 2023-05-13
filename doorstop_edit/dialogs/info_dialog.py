@@ -27,6 +27,7 @@ class InfoDialog:
         dialog = _InfoDialog(parent)
         dialog.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         dialog.resize(100, 100)  # Set to very small, it will autoexpand to fit content.
+        dialog.setContentsMargins(12, 12, 6, 0)
         dialog.setWindowTitle(title)
         dialog.ui.text.setTextFormat(Qt.TextFormat.RichText)
         dialog.ui.text.setText(text)

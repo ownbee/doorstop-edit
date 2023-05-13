@@ -104,12 +104,9 @@ class _SettingDialog(QDialog):
 class SettingDialog(QObject):
     on_theme_changed = Signal()
 
-    class Settings(MainWindow.ThemeSettings):
-        pass
-
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
-        self.setting = SettingDialog.Settings()
+        self.theme_setting = MainWindow.ThemeSettings()
 
     def open(self) -> None:
         parent = self.parent()
@@ -117,10 +114,10 @@ class SettingDialog(QObject):
         entries: List[_Entry] = [
             _TitleEntry("Theme"),
             _HLineEntry(),
-            _IntEntry("Font Size", self.setting.font_size, min=6, max=20, on_change=self._update_font_size),
+            _IntEntry("Font Size", self.theme_setting.font_size, min=6, max=20, on_change=self._update_font_size),
             _IntEntry(
                 "Desity Scale",
-                self.setting.density_scale,
+                self.theme_setting.density_scale,
                 min=-10,
                 max=10,
                 on_change=self._update_density_scale,
@@ -130,9 +127,9 @@ class SettingDialog(QObject):
         dialog.exec()
 
     def _update_font_size(self, val: int) -> None:
-        self.setting.font_size = val
+        self.theme_setting.font_size = val
         self.on_theme_changed.emit()
 
     def _update_density_scale(self, val: int) -> None:
-        self.setting.density_scale = val
+        self.theme_setting.density_scale = val
         self.on_theme_changed.emit()

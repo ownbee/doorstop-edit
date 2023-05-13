@@ -21,12 +21,15 @@ class DoorstopData(QObject):
 
     tree_changed = Signal((bool))  # Called when tree changed on disk
 
-    def __init__(self, parent: Optional[QObject], root: Path) -> None:
+    def __init__(self, parent: Optional[QObject], root: Optional[Path] = None) -> None:
         super().__init__(parent=parent)
-        self._root = root
+        self.root = root
         self._tree: Optional[doorstop.Tree] = None
         self.original_item_data: Dict[str, str] = {}
         self.file_watcher = FileWatcher(self._on_filewatch_callback)
+
+    def has_root(self) -> bool:
+        return self.root is not None
 
     def start(self) -> None:
         self.file_watcher.start()
@@ -52,10 +55,13 @@ class DoorstopData(QObject):
 
     @Slot(bool)
     @time_function("Rebuilding document tree")
-    def rebuild(self, only_reload: bool) -> None:
-        if self._tree is None or not only_reload:
+    def rebuild(self, only_reload: bool = False, new_root: Optional[Path] = None) -> None:
+        if new_root is not None:
+            self.root = new_root
+
+        if new_root is not None or self._tree is None or not only_reload:
             self.file_watcher.pause()  # Dont trigger any events while rebuilding
-            self._tree = doorstop.build(cwd=str(self._root), root=str(self._root))
+            self._tree = doorstop.build(cwd=str(self.root), root=str(self.root))
 
         # Always load after build (no lazy) load to avoid lag spikes when user starts clicking around.
         self._tree.load(reload=True)

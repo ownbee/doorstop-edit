@@ -24,19 +24,20 @@ doorstop.Item.auto = False  # Disable automatic save.
 def show_splash_screen(app: QApplication) -> QSplashScreen:
     pixmap = QIcon(":/icons/favicon").pixmap(QSize(400, 400))
     splash = QSplashScreen(pixmap)
-    splash.showMessage(
-        "Loading doorstop tree...", Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.white
-    )
     splash.show()
     app.processEvents()
     return splash
+
+
+def update_splash_msg(ss: QSplashScreen, text: str) -> None:
+    ss.showMessage(text, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.white)
 
 
 def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true", help="turn on verbose logging")
     parser.add_argument("--version", action="store_true", help="turn on verbose logging")
-    parser.add_argument("directory", default=".", nargs="?", help="Doorstop root directory")
+    parser.add_argument("directory", default="", nargs="?", help="Doorstop root directory")
     args = parser.parse_args(argv[1:])
 
     if args.version:
@@ -50,8 +51,12 @@ def setup(app: QApplication, argv: List[str]) -> Optional[DoorstopEdit]:
     )
     logger.setLevel(logging.DEBUG if args.verbose else logging.INFO)
 
-    root_directory = Path(args.directory)
-    if not root_directory.is_dir():
+    if len(args.directory) > 0:
+        root_directory = Path(args.directory)
+    else:
+        root_directory = None
+
+    if root_directory and not root_directory.is_dir():
         logger.error("Invalid argument: '%s' is not a directory.", root_directory)
         return None
 
@@ -72,9 +77,11 @@ def main() -> int:
     # As minimalistic as possible since it wont be tested.
     app = QApplication([])
     splash = show_splash_screen(app)
+    update_splash_msg(splash, "Loading UI...")
     editor = setup(app, sys.argv)
     app.aboutToQuit.connect(editor.quit)  # type: ignore
     if editor is not None:
+        update_splash_msg(splash, "Starting UI ...")
         editor.start()
         splash.finish(editor.window)
         return app.exec()

@@ -1,3 +1,4 @@
+import tempfile
 from pathlib import Path
 from typing import Iterator
 from unittest.mock import patch
@@ -7,9 +8,9 @@ import pytest
 from PySide6.QtCore import Qt
 from pytestqt.qtbot import QtBot
 
-from doorstop_edit.application import DoorstopEdit
+from doorstop_edit.application import DoorstopEdit, QFileDialog
 from doorstop_edit.conftest import NUM_DOC, NUM_ITEMS_PER_DOC
-from doorstop_edit.dialogs import ConfirmDialog
+from doorstop_edit.dialogs import ConfirmDialog, InfoDialog
 from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
 
 
@@ -135,3 +136,16 @@ def test_document_clear_all_suspect_links(qtbot: QtBot, app: DoorstopEdit, monke
             qtbot.mouseClick(app.window.ui.doc_clear_links_tool_button, Qt.MouseButton.LeftButton)
 
     assert item_clear_mock.call_count == NUM_ITEMS_PER_DOC
+
+
+def test_open_folder(qtbot: QtBot, app: DoorstopEdit, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        InfoDialog, "inform", classmethod(lambda *_: None)
+    )  # We will open an empty directory which will trigger an inform.
+
+    with tempfile.TemporaryDirectory() as tempDir, patch.object(doorstop, "build") as doorstop_build:
+        monkeypatch.setattr(QFileDialog, "getExistingDirectory", classmethod(lambda *_: tempDir))
+        with qtbot.wait_signal(app.window.ui.menu_action_open_folder.triggered):
+            app.window.ui.menu_action_open_folder.trigger()
+
+        assert doorstop_build.call_count == 1

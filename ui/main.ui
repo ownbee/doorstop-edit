@@ -170,6 +170,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="menu_action_open_folder"/>
+    <addaction name="separator"/>
     <addaction name="menu_action_settings"/>
     <addaction name="separator"/>
     <addaction name="menu_action_exit"/>
@@ -1125,6 +1127,11 @@ Blah blah blah</string>
    </property>
    <property name="toolTip">
     <string>Open settings</string>
+   </property>
+  </action>
+  <action name="menu_action_open_folder">
+   <property name="text">
+    <string>Open Folder...</string>
    </property>
   </action>
  </widget>

@@ -36,7 +36,7 @@ class ItemTreeView:
         self._tree_widget.setColumnCount(2)
         self._tree_widget.setHeaderLabels(["Level", "Header"])
         self._tree_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self._tree_widget.itemPressed.connect(self._on_item_pressed)
+        self._tree_widget.itemClicked.connect(self._on_item_pressed)
         self._tree_widget.customContextMenuRequested.connect(self._prepare_context_menu)
         self._tree_widget.setItemDelegate(CustomColorItemDelegate(self._tree_widget, paint_border=False))
         self._item_tree_search_input = item_tree_search_input
@@ -158,23 +158,27 @@ class ItemTreeView:
         self._selected_item_uids = norm_items
         self._update()
 
-    def update(self, document_name: str) -> None:
+    def update(self, document_name: Optional[str]) -> None:
         self._selected_document_name = document_name
         self._update()
 
     @time_function("Updating tree view")
     def _update(self, notify_change: bool = True) -> None:
+        # Always clear selection before insert since it will generate a lot of selection changed
+        # otherwise. Does not completely eleminate the "problem" in all cases though. Clear is also
+        # wanted when no document selected.
+        self._tree_widget.clearSelection()
+        self._tree_widget.clear()
+
         if self._selected_document_name is None:
             return
         doc = self._doorstop_data.find_document(self._selected_document_name)
         if doc is None:
             self._selected_document_name = None
             return
+
         selected_w_items, top_level_w_items = self._build(build_item_level_tree(doc))
-        # Clear selection before insert since it will generate a lot of selection changed otherwise.
-        # Does not completely eleminate the "problem" in all cases though.
-        self._tree_widget.clearSelection()
-        self._tree_widget.clear()
+
         self._tree_widget.insertTopLevelItems(0, top_level_w_items)
         if notify_change:
             self.notify_change = True

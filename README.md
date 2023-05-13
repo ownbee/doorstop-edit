@@ -31,7 +31,6 @@ way as doorstop.
 
 * Add and remove document.
 * Validating documents and items in a user-friendly manner.
-* Ability to change project root.
 
 ## Install
 

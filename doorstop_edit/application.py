@@ -6,7 +6,7 @@ from typing import Optional
 import doorstop
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QAction, QGuiApplication
-from PySide6.QtWidgets import QApplication, QDialog, QDockWidget
+from PySide6.QtWidgets import QApplication, QDialog, QDockWidget, QFileDialog
 
 from doorstop_edit.app_signals import AppSignals
 from doorstop_edit.dialogs import ConfirmDialog, InfoDialog, SettingDialog
@@ -16,6 +16,8 @@ from doorstop_edit.item_render.item_render_view import ItemRenderView
 from doorstop_edit.item_tree.item_tree_view import ItemTreeView
 from doorstop_edit.main_window import MainWindow
 from doorstop_edit.pinned_items.pinned_items_view import PinnedItemsView
+from doorstop_edit.settings import PersistentSetting
+from doorstop_edit.theme import Theme
 from doorstop_edit.ui_gen.ui_item_viewer import Ui_ItemViewer
 from doorstop_edit.utils.version_summary import create_version_summary
 
@@ -23,16 +25,28 @@ logger = logging.getLogger("gui")
 
 
 class DoorstopEdit(AppSignals):
-    def __init__(self, root: Path) -> None:
+    class Settings(PersistentSetting):
+        IN_GROUP = "DoorstopEdit"
+        last_open_folder = ""
+
+    def __init__(self, root: Optional[Path]) -> None:
         self.window = MainWindow()
         super().__init__(self.window)
+        self.window_tile = self.window.windowTitle()
+        self.settings = self.Settings()
+
+        if root is None and len(self.settings.last_open_folder) > 0:
+            last_open_folder = Path(self.settings.last_open_folder)
+            if last_open_folder.is_dir():
+                root = last_open_folder
 
         self.doorstop_data = DoorstopData(self.window, root)
         self.doorstop_data.tree_changed.connect(self._on_tree_changed)
         self.setting_dialog = SettingDialog(self.window)
         self.setting_dialog.on_theme_changed.connect(lambda window=self.window: window.update_theme())
-        self.window.ui.menu_action_settings.triggered.connect(self._open_settings_dialog)
 
+        self.window.ui.menu_action_open_folder.triggered.connect(self._open_folder_picker)
+        self.window.ui.menu_action_settings.triggered.connect(self._open_settings_dialog)
         self.window.ui.menu_action_exit.triggered.connect(QApplication.exit)
         self.window.ui.item_tree_dock_widget.visibilityChanged.connect(self._dock_item_tree_visibility_changed)
         self.window.ui.menu_action_show_document_tree.triggered[bool].connect(  # type: ignore
@@ -83,20 +97,16 @@ class DoorstopEdit(AppSignals):
 
         self.item_render_view.show(None)  # Set empty but with correct colors (css).
 
-        # Called last since it will trigger view updates.
-        self.doorstop_data.rebuild(False)
-
     def start(self) -> None:
-        self.doorstop_data.start()
         self.window.show()
 
         self._dock_item_tree_visibility_changed(self.window.ui.item_tree_dock_widget.isVisible())
         self._dock_item_edit_visibility_changed(self.window.ui.edit_item_dock_widget.isVisible())
         self._dock_pinned_items_visibility_changed(self.window.ui.pinned_items_dock_widget.isVisible())
 
-        if len(self.doorstop_data.get_documents()) == 0:
-            msg = "No doorstop documents found in project root."
-            InfoDialog.inform(self.window, "Empty project", msg)
+        # Will trigger view updates.
+        self._rebuild_root()
+        self.doorstop_data.start()
 
     def quit(self) -> None:
         """Tear down resources that needs to be teared down before exit."""
@@ -108,7 +118,7 @@ class DoorstopEdit(AppSignals):
     def _update_document_list(self) -> None:
 
         self.window.ui.tree_combo_box.clear()
-        for name, doc in self.doorstop_data.get_documents().items():
+        for i, (name, doc) in enumerate(self.doorstop_data.get_documents().items()):
             parent = self.doorstop_data.find_document(doc.parent)
             if parent is None:
                 parent_text = ""
@@ -116,11 +126,14 @@ class DoorstopEdit(AppSignals):
                 parent_text = f" (-> {parent.prefix})"
             text = name + parent_text
             self.window.ui.tree_combo_box.addItem(text, name)
+            self.window.ui.tree_combo_box.setItemData(i, doc.path, Qt.ItemDataRole.ToolTipRole)
+            if i == 0:
+                self.window.ui.tree_combo_box.setToolTip(doc.path)
 
-    def _update_item_tree(self, document: doorstop.Document) -> None:
-        self.tree_view.update(document.prefix)
+    def _update_item_tree(self, document: Optional[doorstop.Document]) -> None:
+        self.tree_view.update(document.prefix if document else None)
 
-    def _update_used_document(self, document: doorstop.Document) -> None:
+    def _update_used_document(self, document: Optional[doorstop.Document]) -> None:
         """Reload or change used/selected document."""
         self.selected_document = document
         self._update_item_tree(document)
@@ -142,11 +155,17 @@ class DoorstopEdit(AppSignals):
             logger.error(e)
             return
 
+    @Slot(int)
     def _on_selected_document_change(self, index: int) -> None:
         if index == -1:
-            return  # Document list cleared, do nothing.
+            self._update_used_document(None)
+            return
 
         doc_uid = self.window.ui.tree_combo_box.itemData(index)
+        # Copy tooltip from entry to main widget.
+        self.window.ui.tree_combo_box.setToolTip(
+            self.window.ui.tree_combo_box.itemData(index, Qt.ItemDataRole.ToolTipRole)
+        )
 
         logger.debug("Selected document changed to %s", doc_uid)
 
@@ -305,6 +324,10 @@ WARNING: This operation cannot be undone!
 
     @Slot(bool)
     def _on_tree_changed(self, modified_only: bool) -> None:
+        if self.doorstop_data.has_root() and len(self.doorstop_data.get_documents()) == 0:
+            msg = "No doorstop documents found in project root."
+            InfoDialog.inform(self.window, "Empty project", msg)
+
         if not modified_only:
             self._update_document_list()
         if self.selected_document:
@@ -342,3 +365,26 @@ WARNING: This operation cannot be undone!
     @Slot()
     def _open_settings_dialog(self) -> None:
         self.setting_dialog.open()
+
+    @Slot()
+    def _open_folder_picker(self) -> None:
+        folder = QFileDialog.getExistingDirectory(self.window, "Open Folder")
+        if len(folder) > 0:
+            self._rebuild_root(new_root=Path(folder))
+
+    def _rebuild_root(self, new_root: Optional[Path] = None) -> None:
+        try:
+            self.doorstop_data.rebuild(only_reload=False, new_root=new_root)
+            # Save as last opened if rebuild succeeded. Will be default after next restart.
+            self.settings.last_open_folder = str(self.doorstop_data.root)
+            if self.doorstop_data.root is not None:
+                self.window.setWindowTitle(f"{self.doorstop_data.root.name} - {self.window_tile}")
+        except doorstop.DoorstopError as e:
+            logger.exception(e)
+            InfoDialog.inform(
+                self.window,
+                title="Error",
+                text=f"""\
+<p style="font-weight:700;">Failed to open folder:</p>
+<p style="font-style:italic;color:{str(Theme.DANGER_COLOR.name())};">{str(e).capitalize()}</p>""",
+            )
