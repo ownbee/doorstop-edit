@@ -1,11 +1,13 @@
 import enum
 import logging
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Union
 
 import doorstop
-from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtCore import QObject, QUrl, Signal, Slot
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtWebChannel import QWebChannel
+from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from doorstop_edit.doorstop_data import DoorstopData
@@ -106,6 +108,19 @@ function focus_item(id) {{
 """
 
 
+class CustomWebEnginePage(QWebEnginePage):
+    """Custom WebEnginePage to customize how we handle link navigation"""
+
+    def acceptNavigationRequest(
+        self, url: Union[QUrl, str], nav_type: QWebEnginePage.NavigationType, is_main_frame: bool
+    ) -> bool:
+        if nav_type == QWebEnginePage.NavigationType.NavigationTypeLinkClicked:
+            # Send the URL to the system default URL handler.
+            QDesktopServices.openUrl(url)
+            return False
+        return super().acceptNavigationRequest(url, nav_type, is_main_frame)
+
+
 class ItemRenderView(QObject):
     BASE_URL = "file://"
 
@@ -129,6 +144,7 @@ class ItemRenderView(QObject):
 
         self.web_view.loadFinished.connect(self._on_load_finished)
 
+        self.web_view.setPage(CustomWebEnginePage(self.web_view))
         self.channel = QWebChannel(self.web_view.page())
         self.web_view.page().setWebChannel(self.channel)
         self.channel.registerObject("py", self)
