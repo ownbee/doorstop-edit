@@ -240,7 +240,7 @@ class ItemRenderView(QObject):
     @Slot(bool)
     def _on_load_finished(self, ok: bool) -> None:
         if not ok:
-            logger.warning("Web page failed to load.")
+            # Do not warn, this happens when the CustomWebEnginePage redirects to system browser.
             return
 
         if self._clear_history_on_load:
