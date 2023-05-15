@@ -1,17 +1,36 @@
 import re
+from typing import Optional
 
 from PySide6.QtCore import QRegularExpression, Qt
 from PySide6.QtGui import QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from spellchecker import SpellChecker
 
+from doorstop_edit.settings import PersistentSetting
+
 
 class TextEditSpellChecker(QSyntaxHighlighter):
+    class Settings(PersistentSetting):
+        IN_GROUP = "spellchecker"
+        enabled = True
+        langugage = "en"
+
     def __init__(self, parent: QTextDocument):
         super().__init__(parent)
+        self._setting = self.Settings()
+        self._language = self._setting.langugage
+        self._spell: Optional[SpellChecker] = None
 
-        self.spell = SpellChecker()
+    def _get_spellchecker(self) -> SpellChecker:
+        if self._spell is None or self._language != self._setting.langugage:
+            self._spell = SpellChecker(language=self._setting.langugage)
+            self._language = self._setting.langugage
+        return self._spell
 
     def highlightBlock(self, text: str) -> None:
+        if not self._setting.enabled:
+            return
+
+        spell = self._get_spellchecker()
 
         word_list = []
         for w in text.split():
@@ -23,7 +42,7 @@ class TextEditSpellChecker(QSyntaxHighlighter):
             if len(new) > 1:
                 word_list.append(new)
 
-        unknown = self.spell.unknown(word_list)
+        unknown = spell.unknown(word_list)
 
         myClassFormat = QTextCharFormat()
         myClassFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.WaveUnderline)

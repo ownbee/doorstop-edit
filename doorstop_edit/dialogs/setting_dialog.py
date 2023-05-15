@@ -2,6 +2,8 @@ from typing import Callable, Generic, List, TypeVar
 
 from PySide6.QtCore import QObject, Qt, Signal
 from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
     QDialog,
     QFormLayout,
     QFrame,
@@ -11,8 +13,10 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QWidget,
 )
+from spellchecker import SpellChecker
 
 from doorstop_edit.main_window import MainWindow
+from doorstop_edit.utils.spell_checker import TextEditSpellChecker
 
 T = TypeVar("T")
 
@@ -44,6 +48,43 @@ class _IntEntry(_Entry[int]):
         widget.setValue(self.value)
         widget.valueChanged.connect(self.on_change)
         layout.setWidget(row, QFormLayout.ItemRole.FieldRole, widget)
+
+
+class _EnumEntry(_Entry[str]):
+    def __init__(self, label: str, val: str, on_change: Callable[[str], None], choices: List[str]) -> None:
+        super().__init__(label, val, on_change)
+        self.choices = choices
+
+    def add_to_row(self, layout: QFormLayout, row: int) -> None:
+        super().add_to_row(layout, row)
+        widget = QComboBox()
+        widget.setMinimumWidth(100)
+        widget.addItems(self.choices)
+        current_index = 0
+        for i, choice in enumerate(self.choices):
+            if choice == self.value:
+                current_index = i
+        widget.setCurrentIndex(current_index)
+        widget.currentIndexChanged.connect(self._on_index_change)
+        layout.setWidget(row, QFormLayout.ItemRole.FieldRole, widget)
+
+    def _on_index_change(self, index: int) -> None:
+        self.on_change(self.choices[index])
+
+
+class _BoolEntry(_Entry[bool]):
+    def __init__(self, label: str, val: bool, on_change: Callable[[bool], None]) -> None:
+        super().__init__(label, val, on_change)
+
+    def add_to_row(self, layout: QFormLayout, row: int) -> None:
+        super().add_to_row(layout, row)
+        widget = QCheckBox()
+        widget.setChecked(self.value)
+        widget.stateChanged.connect(self._on_state_change)
+        layout.setWidget(row, QFormLayout.ItemRole.FieldRole, widget)
+
+    def _on_state_change(self, state: int) -> None:
+        self.on_change(state != 0)
 
 
 class _HLineEntry(_Entry[int]):
@@ -107,6 +148,7 @@ class SettingDialog(QObject):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.theme_setting = MainWindow.ThemeSettings()
+        self.spell_settings = TextEditSpellChecker.Settings()
 
     def open(self) -> None:
         parent = self.parent()
@@ -122,6 +164,15 @@ class SettingDialog(QObject):
                 max=10,
                 on_change=self._update_density_scale,
             ),
+            _TitleEntry("Edit"),
+            _HLineEntry(),
+            _BoolEntry("Spellchecker Enable", self.spell_settings.enabled, self._update_spell_enable),
+            _EnumEntry(
+                "Spellchecker Lang",
+                self.spell_settings.langugage,
+                choices=list(SpellChecker.languages()),
+                on_change=self._update_spell_language,
+            ),
         ]
         dialog = _SettingDialog(parent, entries)
         dialog.exec()
@@ -133,3 +184,9 @@ class SettingDialog(QObject):
     def _update_density_scale(self, val: int) -> None:
         self.theme_setting.density_scale = val
         self.on_theme_changed.emit()
+
+    def _update_spell_enable(self, enabled: bool) -> None:
+        self.spell_settings.enabled = enabled
+
+    def _update_spell_language(self, val: str) -> None:
+        self.spell_settings.langugage = val
