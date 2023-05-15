@@ -79,8 +79,8 @@ def main() -> int:
     splash = show_splash_screen(app)
     update_splash_msg(splash, "Loading UI...")
     editor = setup(app, sys.argv)
-    app.aboutToQuit.connect(editor.quit)  # type: ignore
     if editor is not None:
+        app.aboutToQuit.connect(editor.quit)
         update_splash_msg(splash, "Starting UI ...")
         editor.start()
         splash.finish(editor.window)
