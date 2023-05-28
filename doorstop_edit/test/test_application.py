@@ -2,6 +2,7 @@ import tempfile
 from pathlib import Path
 from typing import Iterator
 from unittest.mock import patch
+
 import doorstop
 import pytest
 from PySide6.QtCore import Qt
