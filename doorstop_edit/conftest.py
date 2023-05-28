@@ -13,7 +13,7 @@ NUM_DOC = 3
 NUM_ITEMS_PER_DOC = 30
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def tree_root() -> Iterator[Path]:
     with tempfile.TemporaryDirectory() as temp_dir:
         root = Path(temp_dir)

@@ -2,7 +2,6 @@ import tempfile
 from pathlib import Path
 from typing import Iterator
 from unittest.mock import patch
-
 import doorstop
 import pytest
 from PySide6.QtCore import Qt
@@ -14,12 +13,27 @@ from doorstop_edit.dialogs import ConfirmDialog, InfoDialog
 from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
 
 
-@pytest.fixture()
-def app(qtbot: QtBot, tree_root: Path) -> Iterator[DoorstopEdit]:
+@pytest.fixture(scope="session")
+def app_session(tree_root: Path) -> Iterator[DoorstopEdit]:
+    """Create DoorstopEdit
+
+    Created only once per session since QApplcation cannot be recreated reliably in a process, thus
+    it is hard to recreate DoorstopEdit for each test.
+
+    When DoorstopEdit is recreate QApplication still have references to the old instance which cause
+    troubles.
+    """
     app = DoorstopEdit(tree_root)
-    qtbot.add_widget(app.window, before_close_func=lambda x, app=app: app.quit())
     app.start()  # Must show it, clicks wont work otherwise.
     yield app
+    app.quit()
+
+
+@pytest.fixture()
+def app(app_session: DoorstopEdit) -> Iterator[DoorstopEdit]:
+    # Reset document tree to the default document for each test.
+    app_session.window.ui.tree_combo_box.setCurrentIndex(0)
+    yield app_session
 
 
 def click_item_in_tree(qtbot: QtBot, ui: Ui_MainWindow, index: int) -> None:
@@ -42,6 +56,7 @@ def click_button_clear_search(qtbot: QtBot, ui: Ui_MainWindow) -> None:
 
 def type_in_search_box(qtbot: QtBot, ui: Ui_MainWindow, text: str) -> None:
     with qtbot.wait_signal(ui.item_tree_search_input.textChanged):
+        ui.item_tree_search_input.clear()
         qtbot.keyClicks(ui.item_tree_search_input, text)
 
 
