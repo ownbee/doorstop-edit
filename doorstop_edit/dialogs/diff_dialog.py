@@ -9,7 +9,7 @@ import pygments
 from pygments.formatters import HtmlFormatter
 from pygments.lexers.diff import DiffLexer
 from pygments.styles.gh_dark import GhDarkStyle
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog, QWidget
 
 from doorstop_edit.dialogs.differs import Differ, GitDiffer, SimpleDiffer
 from doorstop_edit.doorstop_data import DoorstopData
@@ -19,8 +19,8 @@ logger = logging.getLogger("gui")
 
 
 class _DiffDialog(QDialog):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, parent: Optional[QWidget]) -> None:
+        super().__init__(parent)
         self.ui = Ui_diff_dialog()
         self.ui.setupUi(self)
 
@@ -33,8 +33,8 @@ class DiffMode(enum.Enum):
 class DiffDialog:
     _current_mode = DiffMode.SIMPLE  # Class global to remember choice to next time it opens.
 
-    def __init__(self, item: doorstop.Item, doorstop_data: DoorstopData) -> None:
-        self.dialog = _DiffDialog()
+    def __init__(self, parent: Optional[QWidget], item: doorstop.Item, doorstop_data: DoorstopData) -> None:
+        self.dialog = _DiffDialog(parent)
         self._item = item
         self._doorstop_data = doorstop_data
         self._current_history_index = 0
@@ -137,7 +137,7 @@ class DiffDialog:
         self.dialog.exec()
 
     @classmethod
-    def show(cls, item: doorstop.Item, doorstop_data: DoorstopData) -> "DiffDialog":
-        instance = cls(item, doorstop_data)
+    def show(cls, parent: QWidget, item: doorstop.Item, doorstop_data: DoorstopData) -> "DiffDialog":
+        instance = cls(parent, item, doorstop_data)
         instance._run()
         return instance

@@ -28,7 +28,7 @@ def initialized_dialog(
     item = doorstop_data.find_item("REQ-B-001")
     assert item is not None
 
-    dialog = DiffDialog(item, doorstop_data)
+    dialog = DiffDialog(None, item, doorstop_data)
     qtbot.add_widget(dialog.dialog)
     yield dialog
 
