@@ -48,13 +48,6 @@ class MainWindow(QMainWindow, QtStyleTools):
         if not settings.state.isEmpty():
             self.restoreState(settings.state)
 
-        for dock in [
-            self.ui.edit_item_dock_widget,
-            self.ui.item_tree_dock_widget,
-            self.ui.pinned_items_dock_widget,
-        ]:
-            self.restoreDockWidget(dock)
-
     def _load_custom_css(self) -> str:
         with open(Path(__file__).parent / "custom.css", "r", encoding="utf-8") as file:
             custom_css = file.read()
