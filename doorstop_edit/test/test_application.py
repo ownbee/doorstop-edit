@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 from pytestqt.qtbot import QtBot
 
 from doorstop_edit.application import DoorstopEdit, QFileDialog
-from doorstop_edit.conftest import NUM_DOC, NUM_ITEMS_PER_DOC
+from doorstop_edit.conftest import NUM_DOC
 from doorstop_edit.dialogs import ConfirmDialog, InfoDialog
 from doorstop_edit.ui_gen.ui_main import Ui_MainWindow
 
@@ -31,10 +31,25 @@ def app_session(tree_root: Path) -> Iterator[DoorstopEdit]:
 
 
 @pytest.fixture()
-def app(app_session: DoorstopEdit) -> Iterator[DoorstopEdit]:
+def app(
+    app_session: DoorstopEdit, tree_root: Path, monkeypatch: pytest.MonkeyPatch, qtbot: QtBot
+) -> Iterator[DoorstopEdit]:
+    # Reset directory
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", classmethod(lambda *_: str(tree_root)))
+    with qtbot.wait_signal(app_session.window.ui.menu_action_open_folder.triggered):
+        app_session.window.ui.menu_action_open_folder.trigger()
+
     # Reset document tree to the default document for each test.
     app_session.window.ui.tree_combo_box.setCurrentIndex(0)
+
     yield app_session
+
+
+def count_items_in_current_document(app: DoorstopEdit) -> int:
+    count = 0
+    for _ in app.selected_document or []:
+        count += 1
+    return count
 
 
 def click_item_in_tree(qtbot: QtBot, ui: Ui_MainWindow, index: int) -> None:
@@ -141,7 +156,7 @@ def test_document_review_all(qtbot: QtBot, app: DoorstopEdit, monkeypatch: pytes
         with qtbot.wait_signal(app.window.ui.doc_review_tool_button.clicked):
             qtbot.mouseClick(app.window.ui.doc_review_tool_button, Qt.MouseButton.LeftButton)
 
-    assert item_review_mock.call_count == NUM_ITEMS_PER_DOC
+    assert item_review_mock.call_count == count_items_in_current_document(app)
 
 
 def test_document_clear_all_suspect_links(qtbot: QtBot, app: DoorstopEdit, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -151,7 +166,7 @@ def test_document_clear_all_suspect_links(qtbot: QtBot, app: DoorstopEdit, monke
         with qtbot.wait_signal(app.window.ui.doc_clear_links_tool_button.clicked):
             qtbot.mouseClick(app.window.ui.doc_clear_links_tool_button, Qt.MouseButton.LeftButton)
 
-    assert item_clear_mock.call_count == NUM_ITEMS_PER_DOC
+    assert item_clear_mock.call_count == count_items_in_current_document(app)
 
 
 def test_open_folder(qtbot: QtBot, app: DoorstopEdit, monkeypatch: pytest.MonkeyPatch) -> None:
