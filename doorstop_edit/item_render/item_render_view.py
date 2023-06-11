@@ -1,7 +1,7 @@
 import enum
 import logging
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import doorstop
 from PySide6.QtCore import QObject, QUrl, Signal, Slot
@@ -111,9 +111,14 @@ function focus_item(id) {{
 class CustomWebEnginePage(QWebEnginePage):
     """Custom WebEnginePage to customize how we handle link navigation"""
 
+    on_reload = Signal()
+
     def acceptNavigationRequest(
         self, url: Union[QUrl, str], nav_type: QWebEnginePage.NavigationType, is_main_frame: bool
     ) -> bool:
+        if nav_type == QWebEnginePage.NavigationType.NavigationTypeReload:
+            self.on_reload.emit()
+            return False
         if nav_type == QWebEnginePage.NavigationType.NavigationTypeLinkClicked:
             # Send the URL to the system default URL handler.
             QDesktopServices.openUrl(url)
@@ -143,8 +148,9 @@ class ItemRenderView(QObject):
         self.on_open_viewer: Callable[[str], None] = lambda x: logger.info("on_open_viewer not connected")
 
         self.web_view.loadFinished.connect(self._on_load_finished)
-
-        self.web_view.setPage(CustomWebEnginePage(self.web_view))
+        page = CustomWebEnginePage(self.web_view)
+        page.on_reload.connect(self._on_reload)
+        self.web_view.setPage(page)
         self.channel = QWebChannel(self.web_view.page())
         self.web_view.page().setWebChannel(self.channel)
         self.channel.registerObject("py", self)
@@ -188,30 +194,37 @@ class ItemRenderView(QObject):
         self.show(self._viewed_item, force_reload=True)
 
     def _update(self, item: Optional[doorstop.Item], reload: bool) -> None:
-        def sort_func(val: doorstop.Item) -> List[int]:
-            return [int(p) for p in str(val.level).split(".")]
+        if item is None:
+            html = HTML_TEMPLATE.format(body="", style=MARKDOWN_CSS)
+            self.web_view.setHtml(html, Path.cwd().as_uri())
+            return
 
-        items_to_render: List[doorstop.Item] = []
-        baseUrl = Path.cwd()
-        if item is not None:
-            self.html_select_item.emit(item.uid.value)
-            baseUrl = Path(item.document.path)
-            for doc_item in self.doorstop_data.iter_items(item.document):
-                items_to_render.append(doc_item)
-            items_to_render.sort(key=sort_func)
-
-        body = ""
-        for item in items_to_render:
-            body += f'<div id="{item.uid.value}" class="doorstop-item"></div>\n'
-
+        self.html_select_item.emit(item.uid.value)
         self.render_progress.emit(0)
+
         if reload:
+            baseUrl = Path(item.document.path)
+            body = self._generate_body(item.document)
             html = HTML_TEMPLATE.format(body=body, style=MARKDOWN_CSS)
             self.web_view.setHtml(html, baseUrl.resolve().as_uri() + "/")
             # Items will be rendered when page has loaded. Elements cannot be updated dynamically
             # before the divs exist in the page.
         else:
-            self._render_items()  # Page already loaded, render items.
+            self._render_items(partial=True)  # Page already loaded, partially render items.
+
+    def _generate_body(self, doc: doorstop.Document) -> str:
+        def sort_func(val: doorstop.Item) -> List[int]:
+            return [int(p) for p in str(val.level).split(".")]
+
+        items_to_render: List[doorstop.Item] = []
+        for doc_item in self.doorstop_data.iter_items(doc):
+            items_to_render.append(doc_item)
+        items_to_render.sort(key=sort_func)
+
+        body = ""
+        for item in items_to_render:
+            body += f'<div id="{item.uid.value}" class="doorstop-item"></div>\n'
+        return body
 
     @Slot(int)
     def _on_render_progress(self, percentage: int) -> None:
@@ -237,6 +250,10 @@ class ItemRenderView(QObject):
         focus = self._viewed_item and id == self._viewed_item.uid.value
         self.html_update_item.emit(id, content, focus, hide)
 
+    @Slot()
+    def _on_reload(self) -> None:
+        self._update(self._viewed_item, reload=True)
+
     @Slot(bool)
     def _on_load_finished(self, ok: bool) -> None:
         if not ok:
@@ -247,21 +264,19 @@ class ItemRenderView(QObject):
             self.web_view.history().clear()
             self._clear_history_on_load = False
 
-        self._render_items()
+        self._render_items(partial=False)
 
-    def _render_items(self) -> None:
+    def _render_items(self, partial: bool) -> None:
         if self._viewed_item is None:
             return
-        items = []
+        items: List[Tuple[doorstop.Item, int]] = []
         for item in self.doorstop_data.iter_items(self._viewed_item.document):
             if item.uid.value == self._viewed_item.uid.value:
                 continue  # We will handle this later
+            items.append((item, self.doorstop_data.get_last_change(item)))
 
-            items.append(item)
-
-        items.insert(0, self._viewed_item)
-
-        self._render_worker.render(items, Path(self._viewed_item.document.path))
+        items.insert(0, (self._viewed_item, self.doorstop_data.get_last_change(self._viewed_item)))
+        self._render_worker.render(items, Path(self._viewed_item.document.path), partial)
 
     @Slot(str)
     def open_item(self, uid: str) -> None:

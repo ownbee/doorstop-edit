@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 from typing import Dict, Generator, Iterable, Optional, Union
 
@@ -6,6 +7,12 @@ from PySide6.QtCore import QObject, Signal, Slot
 
 from doorstop_edit.utils.debug_timer import time_function
 from doorstop_edit.utils.file_watcher import FileWatcher
+
+
+class ItemMetadata:
+    def __init__(self) -> None:
+        self.original: Optional[str] = None
+        self.last_change = 0
 
 
 class DoorstopData(QObject):
@@ -25,7 +32,7 @@ class DoorstopData(QObject):
         super().__init__(parent=parent)
         self.root = root
         self._tree: Optional[doorstop.Tree] = None
-        self.original_item_data: Dict[str, str] = {}
+        self.item_metadata: Dict[str, ItemMetadata] = {}
         self.file_watcher = FileWatcher(self._on_filewatch_callback)
 
     def has_root(self) -> bool:
@@ -123,33 +130,52 @@ class DoorstopData(QObject):
         self.file_watcher.pause()  # To not trigger file changes on editor changes.
 
         p = Path(item.path)
-        if str(item.uid) not in self.original_item_data and p.is_file():
-            self.original_item_data[str(item.uid)] = p.read_text("utf-8")
-        elif not p.is_file():
-            # New file
-            self.original_item_data[str(item.uid)] = ""
+        if str(item.uid) not in self.item_metadata:
+            self.item_metadata[str(item.uid)] = ItemMetadata()
+            if p.is_file():
+                self.item_metadata[str(item.uid)].original = p.read_text("utf-8")
+            elif not p.is_file():
+                # New file
+                self.item_metadata[str(item.uid)].original = ""
+        self.item_metadata[str(item.uid)].last_change = int(time.time())
         item.save()
         item.auto = False  # Turn off auto-save that is enabled when calling save().
-        if self.original_item_data.get(str(item.uid), "") == Path(item.path).read_text("utf-8"):
-            # If no change, delete from database.
-            del self.original_item_data[str(item.uid)]
+        if self.item_metadata[str(item.uid)].original == Path(item.path).read_text("utf-8"):
+            # If no change, set to None to indicate no change.
+            self.item_metadata[str(item.uid)].original = None
 
         self.file_watcher.resume()
 
     def get_original_data(self, item: doorstop.Item) -> Optional[str]:
         """None means no change."""
-        return self.original_item_data.get(str(item.uid))
+        if str(item.uid) in self.item_metadata:
+            return self.item_metadata[str(item.uid)].original
+        return None
 
     def has_item_changed(self, item: doorstop.Item) -> bool:
         """Returns True if item has changed on disk since application start."""
-        return str(item.uid) in self.original_item_data
+        return str(item.uid) in self.item_metadata and self.item_metadata[str(item.uid)].original is not None
 
     def restore_item(self, item: doorstop.Item) -> None:
         """Restore item to its original content on disk."""
-        if str(item.uid) not in self.original_item_data:
+        if str(item.uid.value) not in self.item_metadata:
             # Nothing to restore from.
             return
+
+        orig = self.item_metadata[str(item.uid)].original
+        if orig is None:
+            return
+
         p = Path(item.path)
-        p.write_text(self.original_item_data[str(item.uid)], encoding="utf-8")
+        p.write_text(orig, encoding="utf-8")
         item.load(reload=True)  # Reload item to mirror content on disk.
-        del self.original_item_data[str(item.uid)]  # Delete entry to indicate no change.
+        self.item_metadata[str(item.uid)].original = None
+
+    def get_last_change(self, item: doorstop.Item) -> int:
+        """Get timestamp of items last change/save.
+
+        Zero (0) means item has never been changed.
+        """
+        if str(item.uid.value) not in self.item_metadata:
+            return 0
+        return self.item_metadata[str(item.uid.value)].last_change
