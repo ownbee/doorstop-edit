@@ -54,6 +54,7 @@ def count_items_in_current_document(app: DoorstopEdit) -> int:
 
 def click_item_in_tree(qtbot: QtBot, ui: Ui_MainWindow, index: int) -> None:
     w_item = ui.item_tree_widget.topLevelItem(index)
+    assert w_item is not None
     w_item_rect = ui.item_tree_widget.visualItemRect(w_item)
     with qtbot.wait_signal(ui.item_tree_widget.itemSelectionChanged):
         qtbot.mouseClick(

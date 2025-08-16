@@ -1,3 +1,4 @@
+import logging
 import time
 from pathlib import Path
 from typing import Dict, Generator, Iterable, Optional, Union
@@ -7,6 +8,8 @@ from PySide6.QtCore import QObject, Signal, Slot
 
 from doorstop_edit.utils.debug_timer import time_function
 from doorstop_edit.utils.file_watcher import FileWatcher
+
+logger = logging.getLogger("gui")
 
 
 class ItemMetadata:
@@ -72,6 +75,7 @@ class DoorstopData(QObject):
 
         # Always load after build (no lazy) load to avoid lag spikes when user starts clicking around.
         self._tree.load(reload=True)
+        logger.debug("Loaded %d documents", len(self._tree.documents))
 
         self.file_watcher.watch(list(self.get_documents().values()))
         self.tree_changed.emit(only_reload)

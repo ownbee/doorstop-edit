@@ -1,19 +1,10 @@
-[tool.poetry]
+[project]
 name = "doorstop-edit"
 version = "0.1.1"
 description = "Cross-platform doorstop GUI editor"
-authors = ["Alexander Ernfridsson <ernfridsson@gmail.com>"]
+authors = [{name ="Alexander Ernfridsson", email = "<ernfridsson@gmail.com>"}]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "doorstop_edit"}]
-include = [
-     # override .gitignore
-    "doorstop_edit/ui_gen/*.py",
-    "doorstop_edit/build_info.py"
-]
-exclude = ["**/test/**", "**/tests/**", "**/conftest.py"]
-homepage = "https://github.com/ownbee/doorstop-edit"
-repository = "https://github.com/ownbee/doorstop-edit"
 keywords = ["doorstop", "requirements-management", "documentation", "gui"]
 classifiers = [
     "Operating System :: OS Independent",
@@ -26,19 +17,30 @@ classifiers = [
     "Topic :: Text Editors :: Documentation",
     "Topic :: Text Processing :: Markup",
 ]
+urls = { Repository = "https://github.com/ownbee/doorstop-edit.git", GitHub = "https://github.com/ownbee/doorstop-edit" }
+requires-python = ">=3.9,<3.12" # PySide does not support higher version atm.
+dependencies = [
+    "doorstop >=3.0.2, <4",
+    "PySide6 ~=6.4",
+    "qt-material ~=2.12",
+    "markdown ~=3.4",
+    "plantuml-markdown ~=3.8",
+    "mdformat-myst ~=0.1.5",
+    "pygments ~=2.14",
+    "setuptools ~=65.0",
+    "pyspellchecker ~=0.7",
+    "watchdog ~=3.0",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.12" # PySide does not support higher version atm.
-doorstop = "^3.0.2"
-PySide6 = "^6.4"
-qt-material = "^2.12"
-markdown = "^3.4.0"
-plantuml-markdown = "^3.8.0"
-mdformat-myst = "^0.1.5"
-pygments = "^2.14.0"
-setuptools = "^65.0.0"
-pyspellchecker = "^0.7.1"
-watchdog = "^3.0.0"
+[tool.poetry]
+packages = [{include = "doorstop_edit"}]
+include = [
+     # override .gitignore
+    "doorstop_edit/ui_gen/*.py",
+    "doorstop_edit/build_info.py"
+]
+exclude = ["**/test/**", "**/tests/**", "**/conftest.py"]
+
 
 [tool.poetry.group.dev.dependencies]
 
@@ -48,7 +50,7 @@ autoflake = "^2.0.0"
 isort = "^5.11.4"
 
 # Linters
-mypy = "^0.991"
+mypy = "~1.17"
 flake8 = "^6.0.0"
 
 # Testing
@@ -89,7 +91,7 @@ check_untyped_defs = true
 module = "doorstop_edit.ui_gen.*"  # Generated directory.
 follow_imports = 'silent'
 
-[tool.poetry.scripts]
+[project.scripts]
 doorstop-edit = 'doorstop_edit.main:main'
 
 [build-system]

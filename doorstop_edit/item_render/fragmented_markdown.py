@@ -32,13 +32,14 @@ class FragmentedMarkdown(Markdown):
         self.num_fragments = 0
         super().__init__(**kwargs)
 
-    def reset(self) -> None:
+    def reset(self) -> "FragmentedMarkdown":
         """
         Resets all state variables so that we can start with a new text.
         """
         super().reset()
         self.fragments.clear()
         self.num_fragments = 0
+        return self
 
     def add_fragement(self, source: str) -> Optional[Element]:
         """Register and process markdown fragment to be converted later.
@@ -75,7 +76,7 @@ class FragmentedMarkdown(Markdown):
 
         # Parse the high-level elements.
         root = self.parser.parseDocument(self.lines).getroot()
-        self.fragments.append(root)
+        self.fragments.append(root)  # type: ignore
         self.num_fragments += 1
         return root
 
@@ -109,7 +110,7 @@ class FragmentedMarkdown(Markdown):
             return ""
 
         # Serialize _properly_.  Strip top-level tags.
-        output = self.serializer(root)  # type: ignore
+        output = self.serializer(root)
 
         # Run the text post-processors
         for pp in self.postprocessors:
