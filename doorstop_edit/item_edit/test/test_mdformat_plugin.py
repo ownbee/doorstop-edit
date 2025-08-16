@@ -3,8 +3,7 @@ from doorstop_edit.item_edit.mdformat import format as format_md
 
 def test_keep_undefined_references_as_is() -> None:
     text = r"""\
-Some example text with undefined [ref1] and a footnote [^ref2]
-[Cool][ref1 asd]
+Some example text with undefined [ref1] and a footnote [^ref2] [Cool][ref1 asd]
 
 Line with ok link [ref3] and ok footnote [^ref4] and escaped \[[ref3]\].
 
@@ -12,4 +11,5 @@ Line with ok link [ref3] and ok footnote [^ref4] and escaped \[[ref3]\].
 
 [ref3]: http://example.se
 """
+    print(format_md(text))
     assert format_md(text) == text
