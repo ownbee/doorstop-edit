@@ -1,6 +1,6 @@
 [![PyPI Version](https://img.shields.io/pypi/v/doorstop-edit.svg)](https://pypi.org/project/doorstop-edit)
 [![Linux Test](https://github.com/ownbee/doorstop-edit/actions/workflows/test.yml/badge.svg)](https://github.com/ownbee/doorstop-edit/actions/workflows/test.yml)
-[![Coverage Status](https://img.shields.io/codecov/c/gh/ownbee/doorstop-edit)](https://codecov.io/gh/ownbee/doorstop-edit)
+[![codecov](https://codecov.io/gh/ownbee/doorstop-edit/graph/badge.svg?token=760UQYETPF)](https://codecov.io/gh/ownbee/doorstop-edit)
 
 # Doorstop Edit
 
