@@ -11,5 +11,4 @@ Line with ok link [ref3] and ok footnote [^ref4] and escaped \[[ref3]\].
 
 [ref3]: http://example.se
 """
-    print(format_md(text))
     assert format_md(text) == text
