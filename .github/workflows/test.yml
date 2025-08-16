@@ -88,8 +88,9 @@ jobs:
         if: ${{ matrix.os != 'Ubuntu' }}
         run: poetry run pytest -- -ra -s --color=yes --cov=doorstop_edit --cov-report=xml
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         if: ${{ matrix.os == 'Ubuntu' && matrix.python-version == '3.10' && github.repository == 'ownbee/doorstop-edit' }}
+        continue-on-error: true
         with:
           files: ./coverage.xml
-          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
