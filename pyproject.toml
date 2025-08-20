@@ -36,8 +36,8 @@ dependencies = [
 packages = [{include = "doorstop_edit"}]
 include = [
      # override .gitignore
-    "doorstop_edit/ui_gen/*.py",
-    "doorstop_edit/build_info.py"
+    { path = "doorstop_edit/ui_gen/*.py", format = ["sdist", "wheel"] },
+    { path = "doorstop_edit/build_info.py", format = ["sdist", "wheel"] }
 ]
 exclude = ["**/test/**", "**/tests/**", "**/conftest.py"]
 
