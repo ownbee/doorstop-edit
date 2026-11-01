@@ -226,7 +226,7 @@ class DoorstopEdit(AppSignals):
         msg = f"""\n
 <h3>Doorstop Edit</h3>
 <p>
-{"".join([f'{x}<br>' for x in version_summary.splitlines()])}
+{"".join([f"{x}<br>" for x in version_summary.splitlines()])}
 </p>
 """
         InfoDialog.inform(

@@ -1,12 +1,10 @@
+from os import fsdecode
 from pathlib import Path
 from typing import Callable, List
 
 from doorstop import Document
 from watchdog.events import (
-    FileCreatedEvent,
-    FileDeletedEvent,
-    FileModifiedEvent,
-    FileMovedEvent,
+    FileSystemEvent,
     FileSystemEventHandler,
 )
 from watchdog.observers import Observer
@@ -40,25 +38,18 @@ class FileWatcher(FileSystemEventHandler):
         self.scheduled_docs = docs
         self.resume()
 
-    def on_moved(self, event: FileMovedEvent) -> None:
-        super().on_moved(event)
+    def on_moved(self, event: FileSystemEvent) -> None:
+        self.on_dir_changed(False, Path(fsdecode(event.src_path)).name)
 
-        self.on_dir_changed(False, Path(event.src_path).name)
+    def on_created(self, event: FileSystemEvent) -> None:
+        self.on_dir_changed(False, Path(fsdecode(event.src_path)).name)
 
-    def on_created(self, event: FileCreatedEvent) -> None:
-        super().on_created(event)
+    def on_deleted(self, event: FileSystemEvent) -> None:
+        self.on_dir_changed(False, Path(fsdecode(event.src_path)).name)
 
-        self.on_dir_changed(False, Path(event.src_path).name)
-
-    def on_deleted(self, event: FileDeletedEvent) -> None:
-        super().on_deleted(event)
-
-        self.on_dir_changed(False, Path(event.src_path).name)
-
-    def on_modified(self, event: FileModifiedEvent) -> None:
-        super().on_modified(event)
+    def on_modified(self, event: FileSystemEvent) -> None:
         if event.is_directory:
             # Dont care.
             return
 
-        self.on_dir_changed(True, Path(event.src_path).name)
+        self.on_dir_changed(True, Path(fsdecode(event.src_path)).name)

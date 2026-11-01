@@ -77,8 +77,8 @@ class CustomColorItemDelegate(QStyledItemDelegate):
                     font_style = style_data[2].lower()
 
         text = index.model().data(index, Qt.ItemDataRole.DisplayRole)
-        item_state: QStyle.StateFlag = option.state  # type: ignore
-        rect: QRect = option.rect  # type: ignore
+        item_state: QStyle.StateFlag = option.state
+        rect: QRect = option.rect
         select_mark_rect = QRect(rect.left(), rect.top(), 10, rect.height())
         item_rect = rect.adjusted(self.offset, self.offset, -self.offset, -self.offset)
 

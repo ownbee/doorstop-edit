@@ -1,7 +1,6 @@
 import mdformat
-from mdformat.plugins import PARSER_EXTENSIONS
-
 from doorstop_edit.item_edit.mdformat import plugin
+from mdformat.plugins import PARSER_EXTENSIONS
 
 PLUGIN_NAME = "doorstop-edit-fix"
 

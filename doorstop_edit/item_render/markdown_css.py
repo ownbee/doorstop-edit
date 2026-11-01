@@ -1,4 +1,4 @@
-# flake8: noqa
+# ruff: noqa
 
 # Source: https://raw.githubusercontent.com/sindresorhus/github-markdown-css/main/github-markdown-dark.css
 #

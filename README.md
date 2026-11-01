@@ -48,7 +48,7 @@ There is a python script that generates a document tree which can be useful when
 application.
 
 ```sh
-python3 tools/gen_sample_tree.py
+uv run python tools/gen_sample_tree.py
 
 # Output will be located in the dist/ folder.
 ```

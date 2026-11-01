@@ -307,7 +307,7 @@ class ItemEditView:
         elif isinstance(field.widget, QPlainTextEdit):
             field.widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
             field.widget.customContextMenuRequested.connect(
-                lambda point, widget=field.widget: (self._on_create_text_edit_attribute_context_menu(widget, point))
+                lambda point, widget=field.widget: self._on_create_text_edit_attribute_context_menu(widget, point)
             )
             field.widget.textChanged.connect(
                 lambda field=field: self._on_field_updated(field, field.widget.toPlainText())

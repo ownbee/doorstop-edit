@@ -13,29 +13,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+      - name: Set up uv and Python 3.14
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.10"
-
-      - uses: Gr1N/setup-poetry@v8
-
-      - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+          python-version: "3.14"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Install project dependencies
-        run: poetry install
+        run: uv sync --frozen
 
       - name: Build resources
-        run: poetry run python build.py
+        run: uv run --no-sync python build.py
 
       - name: Build release packages
-        run: poetry build
+        run: uv build
 
       - name: Check Version
         id: check-version
         run: |
-          [[ "$(poetry version --short)" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || echo prerelease=true >> $GITHUB_OUTPUT
+          [[ "$(uv version --short)" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || echo prerelease=true >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: ncipollo/release-action@v1
@@ -46,5 +43,5 @@ jobs:
 
       - name: Publish to PyPI
         env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-        run: poetry publish
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: uv publish --token "$UV_PUBLISH_TOKEN"

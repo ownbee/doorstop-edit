@@ -135,7 +135,6 @@ class ItemRenderView(QObject):
     render_progress = Signal(int)
 
     class ViewMode(enum.Enum):
-
         Document = 0
         Section = 1
         Item = 2

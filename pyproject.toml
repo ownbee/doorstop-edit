@@ -2,80 +2,79 @@
 name = "doorstop-edit"
 version = "0.1.4"
 description = "Cross-platform doorstop GUI editor"
-authors = [{name ="Alexander Ernfridsson", email = "<ernfridsson@gmail.com>"}]
+authors = [{name = "Alexander Ernfridsson", email = "ernfridsson@gmail.com"}]
 license = "MIT"
 readme = "README.md"
 keywords = ["doorstop", "requirements-management", "documentation", "gui"]
 classifiers = [
-    "Operating System :: OS Independent",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Documentation",
     "Topic :: Text Editors :: Documentation",
     "Topic :: Text Processing :: Markup",
 ]
 urls = { Repository = "https://github.com/ownbee/doorstop-edit.git", GitHub = "https://github.com/ownbee/doorstop-edit" }
-requires-python = ">=3.9,<3.12" # PySide does not support higher version atm.
+requires-python = ">=3.11,<3.15"
 dependencies = [
-    "doorstop >=3.0.2, <4",
-    "PySide6 ~=6.4",
-    "qt-material ~=2.12",
-    "markdown ~=3.4",
-    "plantuml-markdown ~=3.8",
-    "mdformat-myst ~=0.1.5",
-    "pygments ~=2.14",
-    "setuptools ~=65.0",
-    "pyspellchecker ~=0.7",
-    "watchdog ~=3.0",
+    "doorstop >=3.2, <4",
+    "PySide6>=6.12,<7",
+    "qt-material>=2.17,<3",
+    "markdown>=3.8,<4",
+    "plantuml-markdown>=3.11,<4",
+    "mdformat-myst>=0.2,<1",
+    "pygments>=2.19,<3",
+    "setuptools>=80,<81",
+    "pyspellchecker>=0.8,<1",
+    "watchdog>=7,<8",
 ]
 
-[tool.poetry]
-packages = [{include = "doorstop_edit"}]
-include = [
-     # override .gitignore
-    { path = "doorstop_edit/ui_gen/*.py", format = ["sdist", "wheel"] },
-    { path = "doorstop_edit/build_info.py", format = ["sdist", "wheel"] }
+[dependency-groups]
+dev = [
+    # Linters
+    "mypy>=1.18,<2",
+    "ruff>=0.14,<1",
+    # Testing
+    "pytest>=8.4,<10",
+    "pytest-qt>=4.5,<5",
+    "pytest-cov>=6,<8",
+    # Tooling
+    "colorama>=0.4.6,<0.5.0",
+    # Typing
+    "types-requests>=2.32,<3",
+    "types-markdown>=3.10,<4",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["doorstop_edit"]
 exclude = ["**/test/**", "**/tests/**", "**/conftest.py"]
 
+[tool.hatch.build.targets.sdist]
+include = ["doorstop_edit", "ui", "tools", "README.md", "LICENSE"]
+exclude = ["**/test/**", "**/tests/**", "**/conftest.py"]
 
-[tool.poetry.group.dev.dependencies]
+[tool.hatch.build]
+# Include generated package files even though they are ignored by Git.
+artifacts = ["doorstop_edit/ui_gen/*.py", "doorstop_edit/build_info.py"]
 
-# Formatters
-black = "^22.12.0"
-autoflake = "^2.0.0"
-isort = "^5.11.4"
-
-# Linters
-mypy = "~1.17"
-flake8 = "^6.0.0"
-
-# Testing
-pytest = "^7.2.0"
-pytest-qt = "^4.2.0"
-pytest-cov = "^4.0.0"
-
-# Tooling
-colorama = "^0.4.6"
-
-# Typing
-types-requests = "^2.28.11.7"
-types-markdown = "^3.4.2.1"
-types-setuptools = "^65.6.0.3"
+[tool.uv]
+package = true
 
 
-[tool.black]
+[tool.ruff]
 line-length = 120
-target-version = ['py310']
+target-version = "py311"
 
-[tool.autoflake]
-imports = ["requests", "PySide6"]
-
-[tool.isort]
-profile = "black"
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+extend-ignore = ["E203"]
+fixable = ["F401", "F841", "I"]
 
 [tool.mypy]
 follow_imports = 'normal'
@@ -95,5 +94,5 @@ follow_imports = 'silent'
 doorstop-edit = 'doorstop_edit.main:main'
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"

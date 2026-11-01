@@ -16,14 +16,14 @@ jobs:
     strategy:
       matrix:
         os: [Ubuntu, macOS, Windows]
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
         include:
           - os: Ubuntu
             image: ubuntu-22.04
           - os: Windows
             image: windows-2022
           - os: macOS
-            image: macos-12
+            image: macos-14
       fail-fast: false
     env:
       DISPLAY: :99.0
@@ -49,47 +49,35 @@ jobs:
           packages: libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 x11-utils libxcb-cursor0
           version: 1.0
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Set up uv and Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Get full Python version
-        id: full-python-version
-        run: echo version=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))") >> $GITHUB_OUTPUT
-
-      - uses: Gr1N/setup-poetry@v8
-
-      - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
-
-      - uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Check lock file
-        run: poetry check
+        run: uv lock --check
 
       - name: Install dependencies
-        run: poetry install --no-root
+        run: uv sync --frozen --no-install-project
 
       - name: Build resources
-        run: poetry run python build.py
+        run: uv run --no-sync python build.py
 
       - name: Code check
-        run: poetry run python tools/check_code.py
+        run: uv run --no-sync python tools/check_code.py
 
       - name: Run tests (Ubuntu)
         if: ${{ matrix.os == 'Ubuntu' }}
-        run: xvfb-run poetry run pytest -- -ra --color=yes --cov=doorstop_edit --cov-report=xml
+        run: xvfb-run uv run --no-sync pytest -ra --color=yes --cov=doorstop_edit --cov-report=xml
 
       - name: Run tests (other)
         if: ${{ matrix.os != 'Ubuntu' }}
-        run: poetry run pytest -- -ra -s --color=yes --cov=doorstop_edit --cov-report=xml
+        run: uv run --no-sync pytest -ra -s --color=yes --cov=doorstop_edit --cov-report=xml
 
       - uses: codecov/codecov-action@v4
-        if: ${{ matrix.os == 'Ubuntu' && matrix.python-version == '3.10' && github.repository == 'ownbee/doorstop-edit' }}
+        if: ${{ matrix.os == 'Ubuntu' && matrix.python-version == '3.11' && github.repository == 'ownbee/doorstop-edit' }}
         continue-on-error: true
         with:
           files: ./coverage.xml
