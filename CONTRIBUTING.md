@@ -20,8 +20,7 @@ Install project:
 uv sync
 ```
 
-Supported Python versions are 3.11–3.14. PySide6 6.12 requires macOS 14 or later;
-on Linux it requires glibc 2.34+ on x86-64 or 2.39+ on ARM64.
+Supported Python versions are 3.11–3.14.
 
 Generate necessary python code (resources and build info):
 
