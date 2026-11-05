@@ -3,6 +3,7 @@ from typing import Mapping
 from markdown_it import MarkdownIt
 from markdown_it.common.utils import normalizeReference
 from markdown_it.rules_inline import StateInline
+
 from mdformat.renderer import RenderContext, RenderTreeNode
 from mdformat.renderer.typing import Postprocess, Render
 

@@ -37,7 +37,6 @@ def check(name: str) -> Callable:
                 print_color(Fore.GREEN, "PASSED.")
                 return retval
             except subprocess.CalledProcessError as e:
-
                 print_color(Fore.RED, "FAILED")
                 print_color(Fore.CYAN, "Return code: ", Fore.RED, str(e.returncode))
                 print_color(Fore.CYAN, "Output:")
@@ -54,38 +53,20 @@ def check(name: str) -> Callable:
     return wrapper
 
 
-@check("black")
-def run_black(files: List[Path], fix: bool) -> None:
-    args = ["black"]
+@check("ruff check")
+def run_ruff_check(files: List[Path], fix: bool) -> None:
+    args = ["ruff", "check"]
+    if fix:
+        args += ["--fix"]
+    args += [str(p) for p in files]
+    subprocess.check_output(args, stderr=subprocess.PIPE)
+
+
+@check("ruff format")
+def run_ruff_format(files: List[Path], fix: bool) -> None:
+    args = ["ruff", "format"]
     if not fix:
         args += ["--check"]
-    args += [str(p) for p in files]
-    subprocess.check_output(args, stderr=subprocess.PIPE)
-
-
-@check("autoflake")
-def run_autoflake(files: List[Path], fix: bool) -> None:
-    args = ["autoflake", "--remove-unused-variables", "--quiet"]
-    if fix:
-        args += ["--in-place"]
-    else:
-        args += ["--check-diff"]
-    args += [str(p) for p in files]
-    subprocess.check_output(args, stderr=subprocess.PIPE)
-
-
-@check("isort")
-def run_isort(files: List[Path], fix: bool) -> None:
-    args = ["isort", "--color"]
-    if not fix:
-        args += ["--check-only"]
-    args += [str(p) for p in files]
-    subprocess.check_output(args, stderr=subprocess.PIPE)
-
-
-@check("flake8")
-def run_flake8(files: List[Path], _: bool) -> None:
-    args = ["flake8", "--color", "always"]
     args += [str(p) for p in files]
     subprocess.check_output(args, stderr=subprocess.PIPE)
 
@@ -121,7 +102,7 @@ def main() -> int:
     py_files = get_py_files(all_files)
     print(f"Found {len(py_files)} python files.")
 
-    py_checks = [run_black, run_autoflake, run_isort, run_flake8, run_mypy]
+    py_checks = [run_ruff_check, run_ruff_format, run_mypy]
     fail = False
     for check in py_checks:
         try:

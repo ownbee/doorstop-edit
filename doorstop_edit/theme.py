@@ -5,7 +5,6 @@ from PySide6.QtGui import QColor
 
 
 class Theme:
-
     PRIMARY_COLOR = QColor(0)
     PRIMARY_LIGHT_COLOR = QColor(0)
     SECONDARY_COLOR = QColor(0)
